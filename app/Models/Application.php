@@ -29,10 +29,10 @@ class Application extends Model
     {
         Schema::create('applications', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('facility_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained();
             $table->string('name');
-            $table->text('address')->nullable();
+            $table->text('address');
+            $table->foreignId('facility_id')->constrained('facilities');
             $table->string('event_name');
             $table->date('event_start_date');
             $table->date('event_end_date');
@@ -41,5 +41,6 @@ class Application extends Model
             $table->text('notes')->nullable();
             $table->timestamps();
         });
+        
     }
 }

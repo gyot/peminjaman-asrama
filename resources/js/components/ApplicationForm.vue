@@ -54,7 +54,7 @@ export default {
 
 <template>
   <div class="max-w-xl mx-auto p-2 bg-white shadow-lg rounded-lg">
-    <h2 class="text-2xl font-bold mb-4">Formulir Peminjaman Aula/Asrama</h2>
+    <h2 class="text-2xl font-bold mb-4">- Formulir Peminjaman Aula/Asrama -</h2>
     <form @submit.prevent="submitForm" class="space-y-4">
       <!-- Nama Pemohon -->
       <div>

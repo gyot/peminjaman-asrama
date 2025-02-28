@@ -7,9 +7,10 @@ use Illuminate\Support\Facades\Http;
 
 class WhatsAppController extends Controller
 {
+    
     public function sendMessage(Request $request)
     {
-        $response = Http::post('http://localhost:3001/send-message', [
+        $response = Http::post('https://2a2e-36-92-8-106.ngrok-free.app', [
             'number' => $request->number,
             'message' => $request->message,
         ]);

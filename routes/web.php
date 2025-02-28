@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\FacilityController;
 use App\Http\Controllers\Api\ApplicationController;
+use App\Http\Controllers\HostController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -16,11 +17,12 @@ use App\Http\Controllers\Api\ApplicationController;
 // Route::apiResource('facilities', FacilityController::class);
 // Route::post('applications', [ApplicationController::class, 'store']);
 Route::prefix('api')->group(function () {
+    Route::get('/host', [HostController::class,'getHost']);
     Route::post('setFacilities', [FacilityController::class, 'store']);
     Route::apiResource('facilities', FacilityController::class);
     Route::apiResource('applications', ApplicationController::class);
     Route::post('setApplications', [ApplicationController::class, 'store']);
-    Route::post('/send-whatsapp', [WhatsAppController::class, 'sendMessage']);
+    // Route::post('/send-whatsapp', [WhatsAppController::class, 'sendMessage']);
 
 });
 
