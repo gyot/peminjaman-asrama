@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
+            $table->string('name');
+            $table->integer('capacity');
+            $table->string('unit');
+            $table->decimal('price', 10, 2);
+            $table->string('image')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

@@ -12,7 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('applications', function (Blueprint $table) {
-            $table->id();
+            $table->id();               
+            $table->string('name');
+            $table->text('address');
+            $table->foreignId('facility_id')->constrained('facilities');
+            $table->string('event_name');
+            $table->date('event_start_date');
+            $table->date('event_end_date');
+            $table->string('phone_number');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

@@ -4,20 +4,84 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Models\Facility;
+use Illuminate\Support\Facades\Storage;
 
 class FacilityController extends Controller
 {
     public function index()
     {
-        return Facility::all();
+        return response()->json(Facility::all(), 200);
     }
 
     public function store(Request $request)
     {
-        // return json_encode($request->image);
-        $validated = $request->validate([
+        $validated = $this->validateRequest($request);
+
+        try {
+            $gambarPath = $request->hasFile('image') ? $request->file('image')->store('fasilitas', 'public') : null;
+
+            $fasilitas = Facility::create([
+                'user_id' => $request->user_id,
+                'name' => $request->name,
+                'capacity' => $request->capacity,
+                'unit' => $request->unit,
+                'price' => $request->price,
+                'image' => $gambarPath,
+                'description' => $request->description
+            ]);
+
+            return response()->json(['message' => 'Fasilitas berhasil ditambahkan!', 'data' => $fasilitas], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to create facility', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function show(Facility $facility)
+    {
+        return response()->json($facility, 200);
+    }
+
+    public function update(Request $request)
+    {
+        $facility = Facility::find($request->id);
+        $validated = $this->validateRequest($request);
+        try {
+            $gambarPath = $request->hasFile('image') ? $request->file('image')->store('fasilitas', 'public') : $facility->image;
+
+            $facility->update([
+                'user_id' => $request->user_id,
+                'name' => $request->name,
+                'capacity' => $request->capacity,
+                'unit' => $request->unit,
+                'price' => $request->price,
+                'image' => $gambarPath,
+                'description' => $request->description
+            ]);
+
+            return response()->json(['message' => 'Fasilitas berhasil diperbarui!', 'data' => $facility], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to update facility', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroy(Facility $facility)
+    {
+        try {
+            if ($facility->image) {
+                Storage::disk('public')->delete($facility->image);
+            }
+            $facility->delete();
+            return response()->noContent();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to delete facility', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    private function validateRequest(Request $request)
+    {
+        return $request->validate([
+            'user_id' => 'required|exists:users,id',
             'name' => 'required|string',
             'capacity' => 'required|integer',
             'unit' => 'required|string',
@@ -25,44 +89,5 @@ class FacilityController extends Controller
             'image' => 'nullable|image|max:2048',
             'description' => 'nullable|string',
         ]);
-
-        $gambarPath = null;
-        if ($request->hasFile('image')) {
-            $gambarPath = $request->file('image')->store('fasilitas', 'public');
-        }
-        $fasilitas = Facility::create([
-            'name' => $request->name,
-            'capacity' => $request->capacity,
-            'unit' => $request->unit,
-            'price' => $request->price,
-            'image' => $gambarPath,
-            'description' => $request->description
-        ]);
-        return response()->json(['message' => 'Fasilitas berhasil ditambahkan!', 'data' => $fasilitas], 201);
-    }
-
-    
-
-    public function show(Facility $facility)
-    {
-        return $facility;
-    }
-
-    public function update(Request $request, Facility $facility)
-    {
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string',
-            'capacity' => 'sometimes|required|integer',
-            'description' => 'nullable|string',
-        ]);
-
-        $facility->update($validated);
-        return $facility;
-    }
-
-    public function destroy(Facility $facility)
-    {
-        $facility->delete();
-        return response()->noContent();
     }
 }

@@ -8,11 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Facility extends Model
 {
     use HasFactory;
+    
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
-    protected $fillable = ['name', 'capacity', 'unit', 'price', 'image', 'description'];
+    protected $fillable = ['user_id','name', 'capacity', 'unit', 'price', 'image', 'description'];
     public function up(){
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
             $table->string('name');
             $table->integer('capacity');
             $table->string('unit');
@@ -22,4 +28,5 @@ class Facility extends Model
             $table->timestamps();
         });
     }   
+
 }

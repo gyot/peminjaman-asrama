@@ -1,7 +1,7 @@
 <template>
     <div class="p-4 bg-white rounded-lg shadow-md">
       <h1 class="text-2xl font-bold mb-4">Daftar Fasilitas</h1>
-      <button @click="openModal" class="bg-blue-500 text-white px-4 py-2 rounded">
+      <button @click="openModal('add')" class="bg-blue-500 text-white px-4 py-2 rounded">
         Tambah
       </button>
 
@@ -9,7 +9,7 @@
         <transition name="fade">
             <div v-if="isOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                 <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow">
-                    <h2 class="text-2xl font-semibold mb-4">Tambah Fasilitas</h2>
+                    <h2 class="text-2xl font-semibold mb-4">{{ modalTitle }}</h2>
 
                     <form @submit.prevent="submitForm" enctype="multipart/form-data">
                     <div class="mb-4">
@@ -38,7 +38,7 @@
 
                     <div class="mb-4">
                         <label class="block text-gray-700">Gambar</label>
-                        <input type="file" @change="handleFileUpload" class="w-full border rounded p-2" required>
+                        <input type="file" @change="handleFileUpload" class="w-full border rounded p-2">
                     </div>
 
                     <div class="mb-4">
@@ -52,127 +52,178 @@
             </div>
         </transition>
         <!-- End Modal -->
-      <table class="table-full border-collapsemt-4">
+      <table class="table-full border-collapse mt-4">
         <thead>
           <tr>
-            <th class="border px-4 py-2 ">Gambar</th>
+            <th class="border px-4 py-2">Gambar</th>
             <th class="border px-4 py-2">Nama Fasilitas</th>
             <th class="border px-4 py-2">Kapasitas</th>
             <th class="border px-4 py-2">Harga</th>
             <th class="border px-4 py-2">Unit</th>
             <th class="border px-4 py-2">Deskripsi</th>
+            <th class="border px-4 py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="facility in facilities" :key="facility.id">
-            <td class="border px-4 py-2 whitespace-nowrap"><img :src="'/storage/' +facility.image" alt="" srcset="" width="100"></td>
+            <td class="border px-4 py-2 whitespace-nowrap"><img :src="'/storage/' + facility.image" alt="" width="100"></td>
             <td class="border px-4 py-2">{{ facility.name }}</td>
             <td class="border px-4 py-2">{{ facility.capacity }}</td>
             <td class="border px-4 py-2">{{ facility.price }}</td>
             <td class="border px-4 py-2">{{ facility.unit }}</td>
             <td class="border px-4 py-2">{{ facility.description }}</td>
+            <td class="border px-4 py-2">
+              <button @click="openModal('edit', facility)" class="bg-yellow-500 text-white px-2 py-1 rounded mr-2">Edit</button>
+              <button @click="deleteFacility(facility.id)" class="bg-red-500 text-white px-2 py-1 rounded">Hapus</button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
-  </template>
-  <style scoped>
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity 0.9s ease;
-  }
-  .fade-enter, .fade-leave-to {
-    opacity: 0;
-  }
-  </style>
-  <script>
-  import axios from 'axios';
+</template>
 
-    export default {
-        data() {
-            return {
-                form: {
-                    name: '',
-                    capacity: '',
-                    unit: '',
-                    price: '',
-                    image: null,
-                    description: ''
-                },
-                facilities: [],
-                pollingInterval: null, // Untuk menyimpan interval polling
-                isOpen: false
-            };
-        },
-        created() {
-            this.fetchFacilities(); // Ambil data saat komponen dibuat
-            this.startPolling();    // Mulai polling
-        },
-        beforeDestroy() {
-            this.stopPolling();     // Hentikan polling saat komponen dihancurkan
-        },
-        methods: {
-            fetchFacilities() {
-                axios.get('/api/facilities')
-                    .then((response) => {
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.9s ease;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+</style>
+
+<script>
+import axios from 'axios';
+
+export default {
+    data() {
+        return {
+            form: {
+                user_id: '1',
+                name: '',
+                capacity: '',
+                unit: '',
+                price: '',
+                image: null,
+                description: ''
+            },
+            facilities: [],
+            pollingInterval: null, // Untuk menyimpan interval polling
+            isOpen: false,
+            modalTitle: 'Tambah Fasilitas',
+            editMode: false,
+            editId: null
+        };
+    },
+    created() {
+        this.fetchFacilities(); // Ambil data saat komponen dibuat
+        this.startPolling();    // Mulai polling
+    },
+    beforeDestroy() {
+        this.stopPolling();     // Hentikan polling saat komponen dihancurkan
+    },
+    methods: {
+        fetchFacilities() {
+            axios.get('/api/facilities')
+                .then((response) => {
                     this.facilities = response.data; // Perbarui data fasilitas
                 })
                 .catch((error) => {
                     console.error("Error fetching facilities:", error);
                 });
-            },
-            startPolling() {
-                this.pollingInterval = setInterval(() => {
-                    this.fetchFacilities(); // Panggil fungsi untuk mengambil data setiap interval
-                }, 5000); // Interval 5 detik (5000 ms)
-            },
-            stopPolling() {
-                if (this.pollingInterval) {
-                    clearInterval(this.pollingInterval); // Hentikan polling
-                }
-            },
-            openModal() {
-                this.isOpen = true;
-            },
-            closeModal() {
-                this.isOpen = false;
+        },
+        startPolling() {
+            this.pollingInterval = setInterval(() => {
+                this.fetchFacilities(); // Panggil fungsi untuk mengambil data setiap interval
+            }, 5000); // Interval 5 detik (5000 ms)
+        },
+        stopPolling() {
+            if (this.pollingInterval) {
+                clearInterval(this.pollingInterval); // Hentikan polling
+            }
+        },
+        openModal(mode, facility = null) {
+            this.isOpen = true;
+            this.editMode = mode === 'edit';
+            this.modalTitle = this.editMode ? 'Edit Fasilitas' : 'Tambah Fasilitas';
+            if (this.editMode && facility) {
+                this.editId = facility.id;
+                this.form = { ...facility, image: null };
+            } else {
                 this.resetForm();
-            },
-            handleFileUpload(event) {
-                this.form.image = event.target.files[0];
-            },
-            async submitForm() {
-                let formData = new FormData();
-                formData.append("name", this.form.name);
-                formData.append("capacity", this.form.capacity);
-                formData.append("unit", this.form.unit);
-                formData.append("price", this.form.price);
-                formData.append("description", this.form.description);
-                if (this.form.image) {
-                    formData.append("image", this.form.image);
+            }
+        },
+        closeModal() {
+            this.isOpen = false;
+            this.resetForm();
+        },
+        handleFileUpload(event) {
+            this.form.image = event.target.files[0];
+        },
+        async submitForm() {
+            let formData = new FormData();
+            formData.append("id", this.editId);
+            formData.append("user_id", this.form.user_id);
+            formData.append("name", this.form.name);
+            formData.append("capacity", this.form.capacity);
+            formData.append("unit", this.form.unit);
+            formData.append("price", this.form.price);
+            formData.append("description", this.form.description);
+            if (this.form.image) {
+                formData.append("image", this.form.image);
+            }
+
+            try {
+                console.log(this,this.editMode);
+                // return false;
+                if (this.editMode) {
+                    console.log(this.editId);
+                    
+                    await axios.post(`/api/facilities/update`, formData, {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    });
+                }
+                 else {
+                    console.log(formData);
+                    await axios.post("/api/setFacilities", formData, {
+                        headers: { "Content-Type": "multipart/form-data" },
+                    });
                 }
 
-                try {
-                    await axios.post("/api/setFacilities", formData, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                    });
-
-                    this.fetchFacilities(); // Refresh data setelah submit
-                    this.closeModal();
-                } catch (error) {
-                    console.error("Error submitting form:", error);
+                this.fetchFacilities(); // Refresh data setelah submit
+                this.closeModal();
+            } catch (error) {
+                console.error("Error submitting form:", error);
+                if (error.response && error.response.data) {
+                    alert(`Terjadi kesalahan: ${error.response.data.message}`);
+                } else {
                     alert("Terjadi kesalahan saat menyimpan data");
                 }
-            },
-            resetForm() {
-                this.form = {
-                    name: "",
-                    capacity: "",
-                    unit: "",
-                    price: "",
-                    image: null,
-                    description: "",
-                };
-            },
+            }
         },
-    };
-  </script>
+        async deleteFacility(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus fasilitas ini?")) {
+                try {
+                    await axios.delete(`/api/facilities/${id}`);
+                    this.fetchFacilities(); // Refresh data setelah delete
+                } catch (error) {
+                    console.error("Error deleting facility:", error);
+                    alert("Terjadi kesalahan saat menghapus data");
+                }
+            }
+        },
+        resetForm() {
+            this.form = {
+                user_id: '1',
+                name: "",
+                capacity: "",
+                unit: "",
+                price: "",
+                image: null,
+                description: "",
+            };
+            this.editMode = false;
+            this.editId = null;
+        },
+    },
+};
+</script>

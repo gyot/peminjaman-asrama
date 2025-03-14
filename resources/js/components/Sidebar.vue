@@ -49,17 +49,17 @@
           <router-link to="/dashboard" class="text-white">Dashboard</router-link>
         </li>
         <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-          <router-link to="/applications" class="text-white">Applications</router-link>
+          <router-link to="/applications" class="text-white">Daftar Pesanan</router-link>
         </li>
         <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-          <router-link to="/facilities" class="text-white">Facilities</router-link>
+          <router-link to="/approvals" class="text-white">Pengajuan Terkonfirmasi</router-link>
+        </li>
+        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
+          <router-link to="/facilities" class="text-white">Fasilitas</router-link>
         </li>
 
         <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
           <router-link to="/users" class="text-white">Users</router-link>
-        </li>
-        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-          <router-link to="/approvals" class="text-white">Approvals</router-link>
         </li>
       </ul>
     </nav>

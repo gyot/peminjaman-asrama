@@ -14,8 +14,8 @@ class ApplicationController extends Controller
     public function index()
     {
         //        
-        // return Application::all();
-        $applications = Application::with('user')->get();
+        return Application::where('status', 'pending')->get();
+        // $applications = Application::with('user')->get();
 
         return response()->json($applications, 200, [], JSON_PRETTY_PRINT);
     }
@@ -26,7 +26,7 @@ class ApplicationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            // 'user_id' => 'required|exists:users,id',
             'facility_id' => 'required|exists:facilities,id',
             'event_name' => 'required|string',
             'name' => 'required|string',
