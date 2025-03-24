@@ -24,7 +24,8 @@
                     <td class="border px-4 py-2">{{ application.phone_number }}</td>
                     <td class="border px-4 py-2">{{ application.notes }}</td>
                     <td class="border px-4 py-2">
-                        <button @click="openModal(application.phone_number)" class="bg-blue-500 text-white px-4 py-2 rounded">
+                        <button @click="openModal(application.phone_number)"
+                            class="bg-blue-500 text-white px-4 py-2 rounded">
                             Kirim Pesan
                         </button>
                     </td>
@@ -37,18 +38,22 @@
                 <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-semibold mb-4">Konfirmasi Ke Peminjam</h2>
                     <form @submit.prevent="submitForm" enctype="multipart/form-data">
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Nomor WhatsApp</label>
-                        <input v-model="number" class="w-full border rounded p-2" placeholder="Nomor WhatsApp (628xxx)" readonly/>
-                    </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700">Nomor WhatsApp</label>
+                            <input v-model="number" class="w-full border rounded p-2"
+                                placeholder="Nomor WhatsApp (628xxx)" readonly />
+                        </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Pesan</label>
-                        <textarea v-model="message" class="w-full border rounded p-2" placeholder="Pesan"></textarea>
-                    </div>
-                    <button @click="sendMessage" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Kirim</button>
-                    <button @click="closeModal" type="button" class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Batal</button>
-                    <!-- <button @click="sendMessage">Kirim</button>
+                        <div class="mb-4">
+                            <label class="block text-gray-700">Pesan</label>
+                            <textarea v-model="message" class="w-full border rounded p-2"
+                                placeholder="Pesan"></textarea>
+                        </div>
+                        <button @click="sendMessage" type="button"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Kirim</button>
+                        <button @click="closeModal" type="button"
+                            class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Batal</button>
+                        <!-- <button @click="sendMessage">Kirim</button>
                     <button @click="closeModal">Batal</button> -->
                     </form>
                 </div>
@@ -71,11 +76,13 @@ export default {
             isModalOpen: false,
             application: [],
             pollingInterval: null, // Untuk menyimpan interval polling
+            serverHost: null
         };
     },
     created() {
         this.fetchAacilities(); // Ambil data saat komponen dibuat
         this.startPolling();    // Mulai polling
+        // getServerHost();
     },
     beforeDestroy() {
         this.stopPolling();     // Hentikan polling saat komponen dihancurkan
@@ -101,19 +108,19 @@ export default {
             }
         },
         async sendMessage() {
-            // try {
-                console.log("Mengirim ke:", this.number);
-                const response = await axios.post("http://localhost:80/send-message", {
-                    number: this.number,
-                    message: this.message,
-                });
-                console.log("Respon server:", response.data);
-                // alert(response.data.message);
-                this.isModalOpen = false;
-            // } catch (error) {
-            //     console.error("Error:", error.response?.data || error.message);
-            //     alert("Gagal mengirim pesan! Cek konsol untuk detail.");
-            // }
+            try {
+            console.log("Mengirim ke:", this.number);
+            const response = await axios.post(this.serverHost + "/api/whatsapp/send-message", {
+                number: this.number,
+                message: this.message,
+            });
+            console.log("Respon server:", response.data);
+            // alert(response.data.message);
+            this.isModalOpen = false;
+            } catch (error) {
+                console.error("Error:", error.response?.data || error.message);
+                alert("Gagal mengirim pesan! Cek konsol untuk detail.");
+            }
         },
         openModal(value) {
             this.number = value; // Set nilai yang ingin ditampilkan
@@ -123,6 +130,23 @@ export default {
             this.isModalOpen = false; // Sembunyikan modal
             this.modalValue = null;   // Reset nilai modal
         },
+        getServerHost() {
+            axios.get("/api/host")
+                .then((response) => {
+                    console.log(response.data[0].host);
+                    if (response.data[0].host) {
+                        this.serverHost = response.data[0].host;
+                    } else {
+                        console.error("Host tidak ditemukan");
+                    }
+                    // console.log(this.serverHost);
+
+                })
+                .catch((error) => console.error("Error fetching server host:", error));
+        },
+    },
+    mounted() {
+        this.getServerHost(); // Hanya panggil getServerHost di sini
     },
 };
 </script>
