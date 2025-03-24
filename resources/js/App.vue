@@ -13,23 +13,11 @@
   </script> -->
 
   <template>
-    <div class="flex h-screen">
-      <!-- Sidebar -->
-      <Sidebar :isOpen="isMenuOpen" @close="isMenuOpen = false" />
-  
-      <!-- Content -->
-      <div class="flex-1 flex flex-col">
-        <Header @toggleMenu="toggleMenu" />
-  
-        <!-- Main Content -->
-        <main class="p-6">
-          <MainContent />
-        </main>
-      </div>
-    </div>
+    <router-view />
   </template>
   
-  <script setup>
+  
+  <!-- <script setup>
   import { ref } from "vue";
   import Sidebar from "./components/Sidebar.vue";
   import Header from "./components/Header.vue";
@@ -40,5 +28,14 @@
   const toggleMenu = () => {
     isMenuOpen.value = !isMenuOpen.value;
   };
-  </script>
+  </script> -->
+  <!-- File: src/App.vue -->
+
+<script setup>
+import { useAuthStore } from './stores/auth';
+
+const authStore = useAuthStore();
+authStore.fetchUser(); // Panggil sekali saat App.vue dimuat
+</script>
+
   

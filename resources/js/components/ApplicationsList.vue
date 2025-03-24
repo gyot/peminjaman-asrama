@@ -32,12 +32,11 @@
                 </tr>
             </tbody>
         </table>
-        <!-- Modal -->
         <transition name="fade">
             <div v-if="isModalOpen" class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                 <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow">
                     <h2 class="text-2xl font-semibold mb-4">Konfirmasi Ke Peminjam</h2>
-                    <form @submit.prevent="submitForm" enctype="multipart/form-data">
+                    <form @submit.prevent="sendMessage" enctype="multipart/form-data">
                         <div class="mb-4">
                             <label class="block text-gray-700">Nomor WhatsApp</label>
                             <input v-model="number" class="w-full border rounded p-2"
@@ -49,104 +48,92 @@
                             <textarea v-model="message" class="w-full border rounded p-2"
                                 placeholder="Pesan"></textarea>
                         </div>
-                        <button @click="sendMessage" type="button"
-                            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Kirim</button>
+                        <button type="submit"
+                            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2">Kirim</button>
                         <button @click="closeModal" type="button"
-                            class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Batal</button>
-                        <!-- <button @click="sendMessage">Kirim</button>
-                    <button @click="closeModal">Batal</button> -->
+                            class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2">Batal</button>
                     </form>
                 </div>
             </div>
         </transition>
-        <!-- End Modal -->
     </div>
 </template>
 
 <script>
-
 import axios from 'axios';
-// import { useFunctionStore } from '../functionStore';
-
-// const functionStore = useFunctionStore();
+import Swal from 'sweetalert2';
 
 export default {
     data() {
         return {
             isModalOpen: false,
             application: [],
-            pollingInterval: null, // Untuk menyimpan interval polling
-            serverHost: null
+            pollingInterval: null,
+            serverHost: null,
+            number: '',
+            message: ''
         };
     },
     created() {
-        this.fetchAacilities(); // Ambil data saat komponen dibuat
-        this.startPolling();    // Mulai polling
-        // getServerHost();
+        this.fetchApplications();
+        this.startPolling();
     },
     beforeDestroy() {
-        this.stopPolling();     // Hentikan polling saat komponen dihancurkan
+        this.stopPolling();
     },
     methods: {
-        fetchAacilities() {
+        fetchApplications() {
             axios.get('/api/applications')
-                .then((response) => {
-                    this.application = response.data; // Perbarui data fasilitas
+                .then(response => {
+                    this.application = response.data;
                 })
-                .catch((error) => {
-                    console.error("Error fetching application:", error);
+                .catch(error => {
+                    Swal.fire('Error', 'Gagal mengambil data aplikasi!', 'error');
                 });
         },
         startPolling() {
-            this.pollingInterval = setInterval(() => {
-                this.fetchAacilities(); // Panggil fungsi untuk mengambil data setiap interval
-            }, 5000); // Interval 5 detik (5000 ms)
+            this.pollingInterval = setInterval(this.fetchApplications, 5000);
         },
         stopPolling() {
             if (this.pollingInterval) {
-                clearInterval(this.pollingInterval); // Hentikan polling
+                clearInterval(this.pollingInterval);
             }
         },
         async sendMessage() {
             try {
-            console.log("Mengirim ke:", this.number);
-            const response = await axios.post(this.serverHost + "/api/whatsapp/send-message", {
-                number: this.number,
-                message: this.message,
-            });
-            console.log("Respon server:", response.data);
-            // alert(response.data.message);
-            this.isModalOpen = false;
+                const response = await axios.post(this.serverHost + "/api/whatsapp/send-message", {
+                    number: this.number,
+                    message: this.message,
+                });
+                Swal.fire('Sukses', response.data.message, 'success');
+                this.isModalOpen = false;
             } catch (error) {
-                console.error("Error:", error.response?.data || error.message);
-                alert("Gagal mengirim pesan! Cek konsol untuk detail.");
+                Swal.fire({
+                    icon: "error", // ✅ Ikon yang valid
+                    title: "Gagal mengirim pesan!",
+                    text: "Coba scan ulang QRCode whatsapp!",
+                });
             }
         },
         openModal(value) {
-            this.number = value; // Set nilai yang ingin ditampilkan
-            this.isModalOpen = true; // Tampilkan modal
+            this.number = value;
+            this.isModalOpen = true;
         },
         closeModal() {
-            this.isModalOpen = false; // Sembunyikan modal
-            this.modalValue = null;   // Reset nilai modal
+            this.isModalOpen = false;
+            this.number = '';
+            this.message = '';
         },
         getServerHost() {
             axios.get("/api/host")
-                .then((response) => {
-                    console.log(response.data[0].host);
-                    if (response.data[0].host) {
-                        this.serverHost = response.data[0].host;
-                    } else {
-                        console.error("Host tidak ditemukan");
-                    }
-                    // console.log(this.serverHost);
-
+                .then(response => {
+                    this.serverHost = response.data[0]?.host || null;
                 })
-                .catch((error) => console.error("Error fetching server host:", error));
+                .catch(() => Swal.fire('Error', 'Gagal mendapatkan server host!', 'error'));
         },
     },
     mounted() {
-        this.getServerHost(); // Hanya panggil getServerHost di sini
-    },
+        this.getServerHost();
+    }
 };
 </script>
