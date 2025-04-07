@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('hosts', function (Blueprint $table) {
-            $table->id();
-            $table->string('host');
+        Schema::create('approvals', function (Blueprint $table) {
+            $table->id();           
+            $table->foreignId('id_applications')->constrained('applications');
+            $table->foreignId('id_user')->constrained('users');
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('hosts');
+        //
     }
 };

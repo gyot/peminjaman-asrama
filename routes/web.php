@@ -7,17 +7,20 @@ use App\Http\Controllers\HostController;
 use App\Http\Controllers\AuthController;
 
 Route::prefix('api')->group(function () {
-    Route::get('/host', [HostController::class,'getHost']);
+    Route::get('/host', [HostController::class, 'getHost']);
+    Route::get('/applications/update/{id}', [ApplicationController::class, 'update']);
     Route::post('setFacilities', [FacilityController::class, 'store']);
-    Route::post('facilities/update/', [FacilityController::class, 'update']); // Use PUT method for update
-    Route::delete('facilities/{facility}', [FacilityController::class, 'destroy']); // Use DELETE method for delete
+    Route::put('facilities/update/', [FacilityController::class, 'update']); // Changed to PUT method
+    Route::delete('facilities/{facility}', [FacilityController::class, 'destroy']);
     Route::apiResource('facilities', FacilityController::class);
     Route::apiResource('applications', ApplicationController::class);
     Route::post('setApplications', [ApplicationController::class, 'store']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
+    Route::get('approvals/', [ApplicationController::class, 'approvals']);
+    // Route::get('rejection/{id}', [ApplicationController::class, 'rejection']);
 });
 
 Route::get('/{any}', function () {
-    return view('welcome'); // Ganti 'welcome' dengan nama file Blade utama Anda
+    return view('welcome'); // Ensure 'welcome' Blade file exists or replace with the correct file name
 })->where('any', '.*');

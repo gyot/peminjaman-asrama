@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Host extends Model
 {
-    protected $fillable = ['host'];
+    protected $fillable = ['hosts'];
     public function up(){
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();

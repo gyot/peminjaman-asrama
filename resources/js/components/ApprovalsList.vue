@@ -34,5 +34,39 @@
         this.approvals = response.data;
       });
     },
+    methods: {
+      formatDate(date) {
+        return new Date(date).toLocaleDateString('id-ID', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        });
+      },
+    },
+    mounted() {
+      this.pollingInterval = setInterval(() => {
+        axios.get('/api/approvals').then((response) => {
+          this.approvals = response.data;
+        });
+      }, 5000);
+    },
+    beforeDestroy() {
+      clearInterval(this.pollingInterval);
+    },
+    watch: {
+      approvals(newVal) {
+        if (newVal.length > 0) {
+          this.$emit('approvals-updated', newVal);
+        }
+      },
+    },
+    computed: {
+      formattedApprovals() {
+        return this.approvals.map((approval) => ({
+          ...approval,
+          formattedDate: this.formatDate(approval.created_at),
+        }));
+      },
+    },
   };
   </script>

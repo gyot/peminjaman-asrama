@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     fetchQRCode(host) {
-      axios.get(host + "/api/whatsapp/qr-code")
+      axios.get(host + "api/whatsapp/qr-code")
         .then((response) => {
           if (response.data.qr_code) {
             this.qrCode = response.data.qr_code;

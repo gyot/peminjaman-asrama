@@ -51,9 +51,35 @@ class ApplicationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update($id)
     {
-        //
+        // $application = Application::find($id);
+        // $application->status = 'confirmed';
+        // $application->save();
+        // return response()->json($application, 200, [], JSON_PRETTY_PRINT);
+        $application = Application::find($id); 
+        if (!$application) {
+            return response()->json(['message' => 'Application not found'], 404);
+        }
+        $application->status = 'approved';
+        $application->save();
+        return response()->json($application, 200, [], JSON_PRETTY_PRINT);
+
+    }
+
+    public function approvals() {
+        $applications = Approvals::all();
+        return response()->json($applications, 200, [], JSON_PRETTY_PRINT);
+        
+    }
+
+    public function setApproval(Request $request) {
+        return Approvals::create([
+            'id_applications' => $request->id_applications, 
+            'id_user' => $request->id_user, 
+            'status' => $request->status, 
+            'notes' => $request->notes,
+        ]);  
     }
 
     /**

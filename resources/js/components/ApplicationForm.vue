@@ -100,11 +100,11 @@ export default {
       this.form.phone_number = this.form.phone_number.replace(/[^0-9+]/g, "");
     },
     submitForm() {
-      let phone_number=0;
-      if(this.form.phone_number.charAt(0)=='+'){
-        phone_number=this.form.phone_number.replace(this.form.phone_number.charAt(0),'')
-      }else if(this.form.phone_number.charAt(0)=='0'){
-        phone_number=this.form.phone_number.replace(this.form.phone_number.charAt(0),'62')
+      let phone_number = 0;
+      if (this.form.phone_number.charAt(0) == '+') {
+        phone_number = this.form.phone_number.replace(this.form.phone_number.charAt(0), '')
+      } else if (this.form.phone_number.charAt(0) == '0') {
+        phone_number = this.form.phone_number.replace(this.form.phone_number.charAt(0), '62')
       }
       const formData = {
         facility_id: this.form.facility_id,
@@ -113,10 +113,12 @@ export default {
         event_start_date: this.form.event_start_date,
         event_end_date: this.form.event_end_date,
         address: this.form.address,
-        phone_number:phone_number,
+        phone_number: phone_number,
         notes: this.form.notes,
       };
-
+      // console.log(document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+      console.log(formData);
+      
       axios.post('/api/setApplications', formData).then((response) => {
         alert('Data berhasil disimpan');
       });

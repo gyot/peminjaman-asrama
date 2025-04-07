@@ -24,7 +24,7 @@
                     <td class="border px-4 py-2">{{ application.phone_number }}</td>
                     <td class="border px-4 py-2">{{ application.notes }}</td>
                     <td class="border px-4 py-2">
-                        <button @click="openModal(application.phone_number)"
+                        <button @click="openModal(application.phone_number,application.id)"
                             class="bg-blue-500 text-white px-4 py-2 rounded">
                             Kirim Pesan
                         </button>
@@ -71,7 +71,8 @@ export default {
             pollingInterval: null,
             serverHost: null,
             number: '',
-            message: ''
+            message: '',
+            application_id: null,
         };
     },
     created() {
@@ -82,41 +83,39 @@ export default {
         this.stopPolling();
     },
     methods: {
-        fetchApplications() {
-            axios.get('/api/applications')
-                .then(response => {
-                    this.application = response.data;
-                })
-                .catch(error => {
-                    Swal.fire('Error', 'Gagal mengambil data aplikasi!', 'error');
-                });
-        },
         startPolling() {
             this.pollingInterval = setInterval(this.fetchApplications, 5000);
         },
         stopPolling() {
             if (this.pollingInterval) {
                 clearInterval(this.pollingInterval);
+                this.pollingInterval = null;
             }
         },
         async sendMessage() {
+            if (!this.number || !this.message) {
+                Swal.fire('Error', 'Nomor WhatsApp dan pesan tidak boleh kosong!', 'error');
+                return;
+            }
             try {
-                const response = await axios.post(this.serverHost + "/api/whatsapp/send-message", {
+                await axios.post(this.serverHost + "api/whatsapp/send-message", {
                     number: this.number,
                     message: this.message,
                 });
-                Swal.fire('Sukses', response.data.message, 'success');
+                await axios.get('/api/applications/update/' + this.application_id);
+                Swal.fire('Sukses', 'Pesan berhasil dikirim!', 'success');
                 this.isModalOpen = false;
             } catch (error) {
                 Swal.fire({
-                    icon: "error", // ✅ Ikon yang valid
+                    icon: "error",
                     title: "Gagal mengirim pesan!",
                     text: "Coba scan ulang QRCode whatsapp!",
                 });
             }
         },
-        openModal(value) {
+        openModal(value, value1) {
             this.number = value;
+            this.application_id = value1;
             this.isModalOpen = true;
         },
         closeModal() {
@@ -126,10 +125,19 @@ export default {
         },
         getServerHost() {
             axios.get("/api/host")
+            .then(response => {
+                this.serverHost = response.data[0]?.host || null;
+            })
+            .catch(() => Swal.fire('Error', 'Gagal mendapatkan server host!', 'error'));
+        },
+        fetchApplications() {
+            axios.get('/api/applications')
                 .then(response => {
-                    this.serverHost = response.data[0]?.host || null;
+                    this.application = response.data;
                 })
-                .catch(() => Swal.fire('Error', 'Gagal mendapatkan server host!', 'error'));
+                .catch(error => {
+                    Swal.fire('Error', 'Gagal mengambil data aplikasi!', 'error');
+                });
         },
     },
     mounted() {

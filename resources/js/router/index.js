@@ -16,11 +16,12 @@ import Register from "../views/Register.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 
 const routes = [
-    { 
+  { path: "/dashboard", component: Dashboard, meta: { requiresAuth: false } },
+  { 
       path: "/", 
-      component: MainLayout,
+      component: MainLayout,meta: { requiresAuth: true },
       children: [
-        { path: "dashboard", component: Dashboard, meta: { requiresAuth: true } },
+        // { path: "", component: Dashboard, meta: { requiresAuth: true } },
         { path: "/whatsapp", name: "whatsapp", component: WhatsApp, meta: { requiresAuth: true } },
         { path: "/applications", name: "applications", component: Applications, meta: { requiresAuth: true } },
         { path: "/facilities", name: "facilities", component: Facilities, meta: { requiresAuth: true } },
