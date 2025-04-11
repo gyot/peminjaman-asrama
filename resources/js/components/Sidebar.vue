@@ -45,9 +45,9 @@
         <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
           <router-link to="/whatsapp" class="text-white">Whatsapp Web</router-link>
         </li>
-        <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
+        <!-- <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
           <router-link to="/dashboard" class="text-white">Dashboard</router-link>
-        </li>
+        </li> -->
         <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
           <router-link to="/applications" class="text-white">Daftar Pesanan</router-link>
         </li>
