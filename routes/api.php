@@ -6,3 +6,4 @@ use App\Http\Controllers\Api\ApplicationController;
 
 // Contoh route API
 Route::post('/setApplications', [ApplicationController::class, 'store']);
+Route::post('applications/{id}/approval', [ApplicationController::class, 'setApproval']);

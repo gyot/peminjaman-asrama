@@ -15,7 +15,7 @@ Route::prefix('api')->group(function () {
     Route::apiResource('facilities', FacilityController::class);
     Route::apiResource('applications', ApplicationController::class);
     Route::get('applications/{id}', [ApplicationController::class, 'show']);
-    Route::post('applications/{id}/approval', [ApplicationController::class, 'setApproval']);
+    // Route::post('applications/{id}/approval', [ApplicationController::class, 'setApproval']);
     // Route::post('setApplications', [ApplicationController::class, 'store']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);

@@ -11,7 +11,7 @@ class Approvals extends Model
     use HasFactory;
 
     protected $fillable = [
-        'facility_id', 'name', 'address', 'event_name', 'event_start_date', 'event_end_date', 'phone_number', 'status', 'notes'
+         'id_applications', 'id_user', 'status', 'notes'
     ];
 
     // Relasi dengan User
