@@ -15,6 +15,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\AllowIframe::class,
+        \App\Http\Middleware\AddCorsHeaders::class, // Middleware CORS manual
     ];
 
     protected $middlewareGroups = [
@@ -24,6 +25,7 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\VerifyCsrfToken::class, // Middleware CSRF
         ],
 
         'api' => [

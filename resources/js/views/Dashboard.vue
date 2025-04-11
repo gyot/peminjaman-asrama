@@ -9,5 +9,5 @@
 import { useAuthStore } from '../stores/auth';
 import ApplicationForm from '../components/ApplicationForm.vue';
 
-const authStore = useAuthStore();
+// const authStore = useAuthStore();
 </script>

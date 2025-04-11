@@ -23,14 +23,19 @@
                     <td class="border px-4 py-2">{{ $formatDate(application.event_end_date) }}</td>
                     <td class="border px-4 py-2">{{ application.phone_number }}</td>
                     <td class="border px-4 py-2">{{ application.notes }}</td>
-                    <td class="border px-4 py-2">
-                        <button @click="openModal(application.phone_number,application.id)"
-                            class="bg-blue-500 text-white px-4 py-2 rounded">
+                    <td class="border px-4 py-2 space-y-2">
+                        <button @click="openModal(application.phone_number, application.id)"
+                            class="bg-blue-500 text-white px-4 py-2 rounded w-full hover:bg-blue-600 transition-colors duration-300">
                             Kirim Pesan
                         </button>
+                        <router-link :to="`/applications/${application.id}`"
+                            class="bg-green-500 text-white px-4 py-2 rounded w-full block text-center hover:bg-green-600 transition-colors duration-300">
+                            Detail
+                        </router-link>
                     </td>
                 </tr>
             </tbody>
+
         </table>
         <transition name="fade">
             <div v-if="isModalOpen" class="modal fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -125,10 +130,10 @@ export default {
         },
         getServerHost() {
             axios.get("/api/host")
-            .then(response => {
-                this.serverHost = response.data[0]?.host || null;
-            })
-            .catch(() => Swal.fire('Error', 'Gagal mendapatkan server host!', 'error'));
+                .then(response => {
+                    this.serverHost = response.data[0]?.host || null;
+                })
+                .catch(() => Swal.fire('Error', 'Gagal mendapatkan server host!', 'error'));
         },
         fetchApplications() {
             axios.get('/api/applications')

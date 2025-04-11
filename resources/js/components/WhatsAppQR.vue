@@ -27,16 +27,32 @@ export default {
   methods: {
     fetchQRCode(host) {
       axios.get(host + "api/whatsapp/qr-code")
-        .then((response) => {
-          if (response.data.qr_code) {
-            this.qrCode = response.data.qr_code;
-            console.log("QR Code berhasil diatur:", this.qrCode);
+      .then((response) => {
+        console.log("QR Code response:", response.data);
+
+        if (response.data.qr_code) {
+          this.qrCode = response.data.qr_code;
+          console.log("QR Code berhasil diatur:", this.qrCode);
+        } else {
+          if (response.data.status === "authenticated") {
+            console.log("QR Code sudah di-scan dan terautentikasi!");
+            clearInterval(this.pollingInterval); // stop polling
           } else {
-            this.qrCode = null;
-            console.error("QR Code tidak ditemukan dalam respons.");
+            console.log("QR Code mungkin sudah di-scan atau kadaluarsa.");
           }
-        })
-        .catch((error) => console.error("Error fetching QR Code:", error));
+          this.qrCode = null;
+        }
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 404) {
+          console.log("QR sudah discan"); // Ini yang kamu mau
+          // alert("QR sudah discan, silakan lanjutkan!");
+          // Atau update UI sesuai kebutuhan
+        } else {
+          console.error("Error fetching QR Code:", error);
+          // alert("Terjadi kesalahan saat mengambil QR Code.");
+        }
+      });
     },
     async sendMessage() {
       try {

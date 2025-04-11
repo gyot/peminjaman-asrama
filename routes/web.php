@@ -14,10 +14,13 @@ Route::prefix('api')->group(function () {
     Route::delete('facilities/{facility}', [FacilityController::class, 'destroy']);
     Route::apiResource('facilities', FacilityController::class);
     Route::apiResource('applications', ApplicationController::class);
-    Route::post('setApplications', [ApplicationController::class, 'store']);
+    Route::get('applications/{id}', [ApplicationController::class, 'show']);
+    Route::post('applications/{id}/approval', [ApplicationController::class, 'setApproval']);
+    // Route::post('setApplications', [ApplicationController::class, 'store']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
     Route::get('approvals/', [ApplicationController::class, 'approvals']);
+    
     // Route::get('rejection/{id}', [ApplicationController::class, 'rejection']);
 });
 

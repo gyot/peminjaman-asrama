@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Application;
+use App\Models\Approvals;
 
 class ApplicationController extends Controller
 {
@@ -14,10 +15,22 @@ class ApplicationController extends Controller
     public function index()
     {
         //        
-        return Application::where('status', 'pending')->get();
+        // return Application::where('status', 'pending')->get();
         // $applications = Application::with('user')->get();
+        $applications = Application::whereDoesntHave('approval')->get();
+
 
         return response()->json($applications, 200, [], JSON_PRETTY_PRINT);
+    }
+
+    public function show($id)
+    {
+        //        
+        // return Application::where('status', 'pending')->get();
+        // $applications = Application::with('user')->get();
+        $application = Application::with('facility', 'approval')->findOrFail($id);
+        return response()->json($application);
+
     }
 
     /**
@@ -43,10 +56,10 @@ class ApplicationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+    // public function show(string $id)
+    // {
+    //     //
+    // }
 
     /**
      * Update the specified resource in storage.
@@ -73,12 +86,12 @@ class ApplicationController extends Controller
         
     }
 
-    public function setApproval(Request $request) {
+    public function setApproval(Request $request,$id) {
         return Approvals::create([
-            'id_applications' => $request->id_applications, 
+            'id_applications' => $id, 
             'id_user' => $request->id_user, 
             'status' => $request->status, 
-            'notes' => $request->notes,
+            'notes' => $request->message,
         ]);  
     }
 

@@ -14,6 +14,7 @@ import Approvals from "../views/Approvals.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import ResetPassword from "../views/ResetPassword.vue";
+import ApplicationsDetail from "../views/ApplicationsDetail.vue";
 
 const routes = [
   { path: "/dashboard", component: Dashboard, meta: { requiresAuth: false } },
@@ -27,7 +28,8 @@ const routes = [
         { path: "/facilities", name: "facilities", component: Facilities, meta: { requiresAuth: true } },
         { path: "/users", name: "users", component: Users, meta: { requiresAuth: true } },
         { path: "/approvals", name: "approvals", component: Approvals, meta: { requiresAuth: true } },
-        { path: "/dashboard", name: "dashboard", component: Dashboard, meta: { requiresAuth: true } },
+        // { path: "/dashboard", name: "dashboard", component: Dashboard, meta: { requiresAuth: true } },
+        { path: "/applications/:id", name: "detail", component: ApplicationsDetail, meta: { requiresAuth: true } },
       ]
     },
     {

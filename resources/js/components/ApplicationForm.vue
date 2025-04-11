@@ -118,10 +118,18 @@ export default {
       };
       // console.log(document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
       console.log(formData);
-      
-      axios.post('/api/setApplications', formData).then((response) => {
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+      axios.post('https://pinjam-sarpras.gdoank.my.id/api/setApplications', formData, {
+          headers: {
+              'X-CSRF-TOKEN': csrfToken
+          }
+      }).then((response) => {
         alert('Data berhasil disimpan');
       });
+      // axios.post('/api/setApplications', formData).then((response) => {
+      //   alert('Data berhasil disimpan');
+      // });
     },
   },
 };

@@ -51,7 +51,7 @@ const handleLogin = async () => {
 
     try {
         await authStore.login(email.value, password.value);
-        router.push('/dashboard');
+        router.push('/application');
     } catch (error) {
         errorMessage.value = 'Login gagal, periksa kembali email dan password.';
     }

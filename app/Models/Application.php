@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class Application extends Model
 {
     use HasFactory;
@@ -43,4 +44,11 @@ class Application extends Model
         });
         
     }
+
+    // Application.php
+    public function approval()
+    {
+        return $this->hasOne(Approvals::class, 'id_applications');
+    }
+
 }
