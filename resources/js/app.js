@@ -16,5 +16,8 @@ import App from './App.vue';
 import router from './router';
 import globalFunctions from './globalFunctions';
 import { createPinia } from 'pinia';
+// di main.js atau main.ts
+import '@fortawesome/fontawesome-free/css/all.css'
+import '@fortawesome/fontawesome-free/js/all.js'
 
 createApp(App).use(globalFunctions).use(createPinia()).use(router).mount('#app');

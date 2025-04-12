@@ -15,6 +15,7 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 import ApplicationsDetail from "../views/ApplicationsDetail.vue";
+import NotFound from '../views/NotFound.vue';
 
 const routes = [
   { path: "/dashboard", component: Dashboard, meta: { requiresAuth: false } },
@@ -40,6 +41,11 @@ const routes = [
         { path: "register", component: Register },
         { path: "reset-password", component: ResetPassword }
       ]
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: NotFound,
     }
 ];
 

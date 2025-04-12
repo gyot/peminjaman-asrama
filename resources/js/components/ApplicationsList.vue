@@ -24,10 +24,10 @@
                     <td class="border px-4 py-2">{{ application.phone_number }}</td>
                     <td class="border px-4 py-2">{{ application.notes }}</td>
                     <td class="border px-4 py-2 space-y-2">
-                        <button @click="openModal(application.phone_number, application.id)"
+                        <!-- <button @click="openModal(application.phone_number, application.id)"
                             class="bg-blue-500 text-white px-4 py-2 rounded w-full hover:bg-blue-600 transition-colors duration-300">
                             Kirim Pesan
-                        </button>
+                        </button> -->
                         <router-link :to="`/applications/${application.id}`"
                             class="bg-green-500 text-white px-4 py-2 rounded w-full block text-center hover:bg-green-600 transition-colors duration-300">
                             Detail

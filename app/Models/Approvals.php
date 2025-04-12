@@ -15,15 +15,15 @@ class Approvals extends Model
     ];
 
     // Relasi dengan User
-    // public function user()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 
     // Relasi dengan Facility (jika diperlukan)
     public function applications()
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsTo(Application::class, 'id_applications');
     }
 
     public function up()

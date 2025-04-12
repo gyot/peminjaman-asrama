@@ -116,13 +116,13 @@ export default {
     },
     async submit() {
       Swal.fire({
-    title: 'Mohon tunggu...',
-    text: 'Sedang mengirim data',
-    allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading();
-    }
-  });
+        title: 'Mohon tunggu...',
+        text: 'Sedang mengirim data',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
       console.log(this.authStore.user);
 
       console.log(this.approvalStatus,
@@ -176,8 +176,8 @@ export default {
     },
   },
   mounted() {
-        this.getServerHost();
-    }
+    this.getServerHost();
+  }
 };
 </script>
 

@@ -81,8 +81,8 @@ class ApplicationController extends Controller
     }
 
     public function approvals() {
-        $applications = Approvals::all();
-        return response()->json($applications, 200, [], JSON_PRETTY_PRINT);
+        $approvals = Approvals::with(['user', 'applications'])->get();
+        return response()->json($approvals  , 200, [], JSON_PRETTY_PRINT);
         
     }
 

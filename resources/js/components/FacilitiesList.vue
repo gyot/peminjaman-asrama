@@ -93,12 +93,13 @@
 
 <script>
 import axios from 'axios';
-
+import { useAuthStore } from '../stores/auth';
 export default {
     data() {
+        const authStore = useAuthStore(); // <--- dipanggil di dalam data()
         return {
             form: {
-                user_id: '1',
+                user_id: null,
                 name: '',
                 capacity: '',
                 unit: '',
@@ -111,12 +112,14 @@ export default {
             isOpen: false,
             modalTitle: 'Tambah Fasilitas',
             editMode: false,
-            editId: null
+            editId: null,
+            authStore,
         };
     },
     created() {
         this.fetchFacilities(); // Ambil data saat komponen dibuat
         this.startPolling();    // Mulai polling
+        this.authStore.fetchUser(); // <--- fetch user di created
     },
     beforeDestroy() {
         this.stopPolling();     // Hentikan polling saat komponen dihancurkan
@@ -160,9 +163,13 @@ export default {
             this.form.image = event.target.files[0];
         },
         async submitForm() {
+            if (!this.authStore.user) {
+                alert("User belum terautentikasi. Harap login terlebih dahulu.");
+                return;
+            }
             let formData = new FormData();
             formData.append("id", this.editId);
-            formData.append("user_id", this.form.user_id);
+            formData.append("user_id", this.authStore.user.id);
             formData.append("name", this.form.name);
             formData.append("capacity", this.form.capacity);
             formData.append("unit", this.form.unit);
@@ -213,7 +220,7 @@ export default {
         },
         resetForm() {
             this.form = {
-                user_id: '1',
+                user_id: null,
                 name: "",
                 capacity: "",
                 unit: "",
