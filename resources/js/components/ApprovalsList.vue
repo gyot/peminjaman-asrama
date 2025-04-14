@@ -1,6 +1,6 @@
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Daftar Approvals</h1>
+    <h1 class="text-2xl font-bold mb-4">Daftar Approval</h1>
 
     <div v-if="loading" class="text-gray-500">Loading data...</div>
     <div v-else>
@@ -9,10 +9,11 @@
           <tr>
             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">ID</th>
             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Dikonfirmasi Oleh</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Application</th>
+            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Pemesan</th>
             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Status</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Notes</th>
+            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Keterangan</th>
             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal</th>
+            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Detail Pengajuan</th>
           </tr>
         </thead>
         <tbody>
@@ -27,6 +28,12 @@
             </td>
             <td class="py-3 px-4">{{ approval.notes || '-' }}</td>
             <td class="py-3 px-4">{{ formatDate(approval.created_at) }}</td>
+            <td class="py-3 px-4">
+              <router-link :to="`/applications/${approval.id_applications}/detail/approvals/`"
+                class="bg-green-500 text-white px-4 py-2 rounded w-full block text-center hover:bg-green-600 transition-colors duration-300">
+                Detail
+              </router-link>
+            </td>
           </tr>
         </tbody>
       </table>

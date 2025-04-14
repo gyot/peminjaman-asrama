@@ -16,21 +16,25 @@ import Register from "../views/Register.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 import ApplicationsDetail from "../views/ApplicationsDetail.vue";
 import NotFound from '../views/NotFound.vue';
+import Konfirmasi from "../views/Konfirmasi.vue";
 
 const routes = [
   { path: "/dashboard", component: Dashboard, meta: { requiresAuth: false } },
+  { path: "/selesai", component: Konfirmasi, meta: { requiresAuth: false } },
   { 
       path: "/", 
       component: MainLayout,meta: { requiresAuth: true },
       children: [
         // { path: "", component: Dashboard, meta: { requiresAuth: true } },
-        { path: "/whatsapp", name: "whatsapp", component: WhatsApp, meta: { requiresAuth: true } },
-        { path: "/applications", name: "applications", component: Applications, meta: { requiresAuth: true } },
-        { path: "/facilities", name: "facilities", component: Facilities, meta: { requiresAuth: true } },
-        { path: "/users", name: "users", component: Users, meta: { requiresAuth: true } },
-        { path: "/approvals", name: "approvals", component: Approvals, meta: { requiresAuth: true } },
-        // { path: "/dashboard", name: "dashboard", component: Dashboard, meta: { requiresAuth: true } },
-        { path: "/applications/:id", name: "detail", component: ApplicationsDetail, meta: { requiresAuth: true } },
+        { path: "/whatsapp", name: "whatsapp", component: WhatsApp },
+        { path: "/applications", name: "applications", component: Applications },
+        { path: "/facilities", name: "facilities", component: Facilities },
+        { path: "/users", name: "users", component: Users },
+        { path: "/approvals", name: "approvals", component: Approvals },
+        // { path: "/dashboard", name: "dashboard", component: Dashboard },
+        { path: "/applications/:id/detail/:approvalStatus", name: "detailapproval", component: ApplicationsDetail },
+        { path: "/applications/:id", name: "detail", component: ApplicationsDetail },
+        
       ]
     },
     {

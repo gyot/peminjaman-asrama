@@ -72,6 +72,7 @@
 
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -95,19 +96,24 @@ export default {
     axios.get('/api/facilities').then((response) => {
       this.facilities = response.data;
     });
+    this.getServerHost();
   },
   methods: {
     validatePhoneNumber() {
       this.form.phone_number = this.form.phone_number.replace(/[^0-9+]/g, "");
     },
     messages(id, name) {
-      return `Halo, terdapat permohonan penggunaan sarpras dari ${name}. Silakan cek detailnya di: http://127.0.0.1:8000/applications/${id}`;
+      return `Halo, terdapat permohonan penggunaan sarpras dari ${name}. Silakan cek detailnya di: https://pinjam-sarpras.gdoank.my.id/applications/${id}`;
     },
     async sendMessage(message) {
       try {
-        await axios.post("https://whatsapp-api.gdoank.my.id/api/whatsapp/send-message", {
+       
+        await axios.post(this.serverHost+"api/whatsapp/send-message", {
           number: '6287865811603',
           message: message,
+        }).then((response) => {
+          console.log(response.data);
+          
         });
       } catch (error) {
         console.error('Error sending message:', error);
@@ -135,12 +141,19 @@ export default {
       const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
       try {
+        Swal.fire({
+          title: 'Harap Tunggu',
+          text: 'Sedang memproses data...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading()
+          }
+        })
         await axios.post('/api/setApplications', formData, {
             headers: {
                 'X-CSRF-TOKEN': csrfToken
             }
         }).then((response) => {
-          alert('Data berhasil disimpan');
           const id = response.data.id;
           const name = this.form.name;
   
@@ -149,6 +162,14 @@ export default {
   
           // Kirim pesan WhatsApp
           this.sendMessage(message);
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: 'Pesan berhasil dikirim!',
+            showConfirmButton: false,
+            timer: 1500
+          });
+          this.$router.push('/selesai');
         });
         // Simpan data form dulu (contoh saja)
         // const response = await axios.post('/api/submit', this.form);
@@ -156,7 +177,6 @@ export default {
         // Ambil ID dari response backend (sesuaikan dengan backend kamu)
 
         // Reset form atau kasih notifikasi sukses
-        alert('Formulir berhasil dikirim!');
         this.resetForm();
       } catch (error) {
         console.error(error);
@@ -179,6 +199,7 @@ export default {
       axios.get("/api/host")
         .then(response => {
           this.serverHost = response.data[0]?.host || null;
+
         })
         .catch(() => Swal.fire('Error', 'Gagal mendapatkan server host!', 'error'));
     },

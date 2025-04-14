@@ -11,7 +11,7 @@
                     <th class="border px-4 py-2">Tanggal Selesai Pemakaian</th>
                     <th class="border px-4 py-2">WhatsApp</th>
                     <th class="border px-4 py-2">Ket.</th>
-                    <th class="border px-4 py-2">Aksi</th>
+                    <th class="border px-4 py-2"></th>
                 </tr>
             </thead>
             <tbody>

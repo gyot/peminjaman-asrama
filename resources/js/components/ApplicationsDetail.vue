@@ -1,8 +1,7 @@
 <template>
   <div class="max-w-4xl mx-auto p-4">
     <div class="bg-white shadow-md rounded-2xl p-6">
-      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Detail Pengajuan {{ authStore.user ?
-        authStore.user.name : 'Guest' }}</h2>
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Detail Pengajuan </h2>
       <div v-if="application" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <!-- Detail Data -->
         <div class="flex flex-col" v-for="(value, label) in details" :key="label">
@@ -24,7 +23,7 @@
       <div v-else class="text-center text-gray-500 py-8">Memuat data...</div>
 
       <!-- Tombol Aksi -->
-      <div class="mt-6 text-center space-x-4">
+      <div v-if="approval == null" class="mt-6 text-center space-x-4">
         <button @click="openModal('approved')"
           class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
           Setujui
@@ -41,7 +40,7 @@
     </div>
 
     <!-- Modal -->
-    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="approvalStatus" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
         <h3 class="text-xl font-semibold mb-4">Kirim Pesan Konfirmasi</h3>
         <p class="mb-2"><strong>Nomor HP:</strong> <input v-model="number" class="w-full border rounded p-2"
@@ -70,6 +69,7 @@ export default {
   data() {
     const authStore = useAuthStore(); // <--- dipanggil di dalam data()
     return {
+      approval:null,
       id: this.$route.params.id,
       application: null,
       showModal: false,
@@ -97,8 +97,11 @@ export default {
     },
   },
   created() {
+    
     this.authStore.fetchUser(); // <--- fetch user di created
     this.fetchData();
+    this.approval = this.$route.params.approvalStatus; 
+    console.log(this.approval);
   },
   methods: {
     async fetchData() {
@@ -137,7 +140,7 @@ export default {
           id_user: this.authStore.user.id,
           id_applications: this.id,
         });
-        // alert('Pesan terkirim!');
+        
         this.sendMessage();
         this.showModal = false;
         this.fetchData(); // refresh data setelah kirim
@@ -177,6 +180,8 @@ export default {
   },
   mounted() {
     this.getServerHost();
+    this.approval = this.$route.params.approvalStatus; 
+    console.log(this.approval);
   }
 };
 </script>
