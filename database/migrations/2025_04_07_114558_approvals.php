@@ -12,13 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('approvals', function (Blueprint $table) {
-            $table->id();           
-            $table->foreignId('id_applications')->constrained('applications');
-            $table->foreignId('id_user')->constrained('users');
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->id();
+            $table->unsignedBigInteger('id_applications');
+            $table->unsignedBigInteger('id_user');
+            $table->string('status');
             $table->text('notes')->nullable();
-            $table->timestamps();
+            $table->timestamps();        
+            $table->foreign('id_applications')->references('id')->on('applications')->onDelete('cascade');
         });
+        
     }
 
     /**

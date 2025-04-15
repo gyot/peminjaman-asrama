@@ -22,7 +22,7 @@
 
         <!-- Status Approval -->
         <div class="flex flex-col">
-          <span class="text-sm text-gray-500">Status Approval:</span>
+          <!-- <span class="text-sm text-gray-500">sss{{ application.approval?.status }}:</span> -->
           <span :class="[
             'text-base font-semibold',
             application.approval?.status === 'approved' ? 'text-green-600' :
@@ -112,6 +112,8 @@ export default {
       try {
         const response = await axios.get(`/api/applications/${this.id}`);
         this.application = response.data;
+        console.log('Fetched application:', this.application);
+
       } catch (error) {
         console.error(error);
       }

@@ -33,7 +33,7 @@ class ApplicationController extends Controller
         //        
         // return Application::where('status', 'pending')->get();
         // $applications = Application::with('user')->get();
-        $application = Application::with('facilities')->findOrFail($id);
+        $application = Application::with(['facilities','approval'])->findOrFail($id);
         return response()->json($application);
 
     }
@@ -108,14 +108,34 @@ class ApplicationController extends Controller
         
     }
 
-    public function setApproval(Request $request,$id) {
-        return Approvals::create([
+    public function setApproval(Request $request, $id)
+{
+    $request->validate([
+        'id_user' => 'required|exists:users,id',
+        'status' => 'required|string',
+        'message' => 'nullable|string',
+    ]);
+
+    // Pastikan aplikasi ada
+    if (!Application::find($id)) {
+        return response()->json(['message' => 'Application not found'], 404);
+    }else {
+        $approval = Approvals::create([
             'id_applications' => $id, 
             'id_user' => $request->id_user, 
             'status' => $request->status, 
             'notes' => $request->message,
-        ]);  
+        ]);
+    
+        return response()->json([
+            'message' => 'Approval created',
+            'data' => $approval,
+        ]);
+        // return $id;
     }
+
+}
+
 
     /**
      * Remove the specified resource from storage.
