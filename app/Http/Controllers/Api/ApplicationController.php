@@ -33,7 +33,7 @@ class ApplicationController extends Controller
         //        
         // return Application::where('status', 'pending')->get();
         // $applications = Application::with('user')->get();
-        $application = Application::with('facility', 'approval')->findOrFail($id);
+        $application = Application::with('facilities')->findOrFail($id);
         return response()->json($application);
 
     }
