@@ -27,6 +27,11 @@ class Facility extends Model
             $table->text('description')->nullable();
             $table->timestamps();
         });
-    }   
+    }  
+    
+    public function applications()
+    {
+        return $this->belongsToMany(Application::class, 'application_facility');
+    }
 
 }

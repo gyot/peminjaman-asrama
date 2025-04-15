@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();               
             $table->string('name');
             $table->text('address');
-            $table->foreignId('facility_id')->constrained('facilities');
+            // $table->foreignId('facility_id')->constrained('facilities');
             $table->string('event_name');
             $table->date('event_start_date');
             $table->date('event_end_date');

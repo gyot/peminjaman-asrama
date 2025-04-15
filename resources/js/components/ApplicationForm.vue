@@ -1,69 +1,63 @@
 <template>
-  <div class="max-w-xl mx-auto p-2 bg-white shadow-lg rounded-lg">
-    <h2 class="text-2xl font-bold mb-4">- Formulir Peminjaman Aula/Asrama -</h2>
+  <div class="max-w-xl mx-auto p-4 bg-white shadow-lg rounded-lg">
+    <h2 class="text-2xl font-bold mb-4 text-center">Formulir Peminjaman Aula/Asrama</h2>
     <form @submit.prevent="submitForm" class="space-y-4">
+      
       <!-- Nama Pemohon -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Nama Pemohon</label>
         <input v-model="form.name" type="text" required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+          class="input-field" />
       </div>
 
       <!-- Alamat -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Alamat</label>
-        <textarea v-model="form.address" required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+        <textarea v-model="form.address" required class="input-field"></textarea>
       </div>
 
       <!-- Nama Kegiatan -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Nama Kegiatan</label>
-        <textarea v-model="form.event_name" required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+        <input v-model="form.event_name" required type="text" class="input-field" />
       </div>
 
       <!-- Tanggal Pemakaian -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Tanggal Mulai Pemakaian</label>
-        <input v-model="form.event_start_date" type="date" required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+        <input v-model="form.event_start_date" type="date" required class="input-field" />
       </div>
 
       <div>
         <label class="block text-sm font-medium text-gray-700">Tanggal Selesai Pemakaian</label>
-        <input v-model="form.event_end_date" type="date" required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+        <input v-model="form.event_end_date" type="date" required class="input-field" />
       </div>
 
       <!-- Nomor HP -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Nomor HP</label>
-        <input v-model="form.phone_number" @input="validatePhoneNumber" required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+        <input v-model="form.phone_number" @input="validatePhoneNumber" type="tel" required class="input-field" />
       </div>
 
-      <!-- Daftar Aula/Asrama -->
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Daftar Aula/Asrama</label>
-        <select v-model="form.facility_id" required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-          <option v-for="facility in facilities" :key="facility.id" :value="facility.id">
-            {{ facility.name }} / {{ facility.price }} / {{ facility.unit }}
-          </option>
-        </select>
+      <!-- Daftar Fasilitas -->
+      <div v-if="facilities.length" class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Daftar Aula/Asrama</label>
+        <div v-for="facility in facilities" :key="facility.id" class="flex items-center space-x-2">
+          <input type="checkbox" :value="facility.id" v-model="form.facility_id"
+            class="text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
+          <span>{{ facility.name }} / {{ facility.price }} / {{ facility.unit }}</span>
+        </div>
       </div>
+      <div v-else class="text-red-500 text-sm">Gagal memuat fasilitas. Coba refresh halaman.</div>
 
       <!-- Catatan Tambahan -->
       <div>
         <label class="block text-sm font-medium text-gray-700">Catatan Tambahan</label>
-        <textarea v-model="form.notes" required
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+        <textarea v-model="form.notes" class="input-field"></textarea>
       </div>
 
-      <!-- Submit Button -->
-      <button type="submit"
-        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+      <!-- Submit -->
+      <button type="submit" class="submit-btn">
         Submit
       </button>
     </form>
@@ -84,103 +78,96 @@ export default {
         event_start_date: '',
         event_end_date: '',
         phone_number: '',
-        facility_id: null,
+        facility_id: [],
         notes: '',
-        serverHost: null,
       },
       facilities: [],
-      title: 'Formulir Permohonan Peminjaman'
+      serverHost: null,
     };
   },
   created() {
-    axios.get('/api/facilities').then((response) => {
-      this.facilities = response.data;
-    });
+    this.fetchFacilities();
     this.getServerHost();
   },
   methods: {
+    fetchFacilities() {
+      axios.get('/api/facilities')
+        .then((res) => {
+          this.facilities = res.data;
+        })
+        .catch(() => {
+          Swal.fire('Error', 'Gagal memuat fasilitas.', 'error');
+        });
+    },
     validatePhoneNumber() {
       this.form.phone_number = this.form.phone_number.replace(/[^0-9+]/g, "");
     },
-    messages(id, name) {
-      return `Halo, terdapat permohonan penggunaan sarpras dari ${name}. Silakan cek detailnya di: https://pinjam-sarpras.gdoank.my.id/applications/${id}`;
-    },
-    async sendMessage(message) {
-      try {
-       
-        await axios.post(this.serverHost+"api/whatsapp/send-message", {
-          number: '6287865811603',
-          message: message,
-        }).then((response) => {
-          console.log(response.data);
-          
-        });
-      } catch (error) {
-        console.error('Error sending message:', error);
-      }
-    },
     async submitForm() {
-      let phone_number = 0;
-      if (this.form.phone_number.charAt(0) == '+') {
-        phone_number = this.form.phone_number.replace(this.form.phone_number.charAt(0), '')
-      } else if (this.form.phone_number.charAt(0) == '0') {
-        phone_number = this.form.phone_number.replace(this.form.phone_number.charAt(0), '62')
+      if (this.form.facility_id.length === 0) {
+        Swal.fire('Oops!', 'Pilih minimal satu fasilitas.', 'warning');
+        return;
       }
+      if (this.form.event_start_date > this.form.event_end_date) {
+        Swal.fire('Oops!', 'Tanggal mulai tidak boleh setelah tanggal selesai.', 'warning');
+        return;
+      }
+      const today = new Date().toISOString().split('T')[0];
+      if (this.form.event_start_date < today) {
+        Swal.fire('Oops!', 'Tanggal mulai tidak boleh kurang dari hari ini.', 'warning');
+        return;
+      }
+
+      // Format nomor
+      let phone_number = this.form.phone_number;
+      if (phone_number.startsWith('+')) {
+        phone_number = phone_number.slice(1);
+      } else if (phone_number.startsWith('0')) {
+        phone_number = '62' + phone_number.slice(1);
+      }
+
       const formData = {
-        facility_id: this.form.facility_id,
-        name: this.form.name,
-        event_name: this.form.event_name,
-        event_start_date: this.form.event_start_date,
-        event_end_date: this.form.event_end_date,
-        address: this.form.address,
-        phone_number: phone_number,
-        notes: this.form.notes,
+        ...this.form,
+        phone_number
       };
-      // console.log(document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-      console.log(formData);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
       try {
         Swal.fire({
-          title: 'Harap Tunggu',
-          text: 'Sedang memproses data...',
+          title: 'Mengirim...',
+          text: 'Mohon tunggu sebentar...',
           allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading()
-          }
-        })
-        await axios.post('/api/setApplications', formData, {
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
-            }
-        }).then((response) => {
-          const id = response.data.id;
-          const name = this.form.name;
-  
-          // Buat pesan
-          const message = this.messages(id, name);
-  
-          // Kirim pesan WhatsApp
-          this.sendMessage(message);
-          Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'Pesan berhasil dikirim!',
-            showConfirmButton: false,
-            timer: 1500
-          });
-          this.$router.push('/selesai');
+          didOpen: () => Swal.showLoading()
         });
-        // Simpan data form dulu (contoh saja)
-        // const response = await axios.post('/api/submit', this.form);
 
-        // Ambil ID dari response backend (sesuaikan dengan backend kamu)
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const response = await axios.post('/api/setApplications', formData, {
+          headers: {
+            'X-CSRF-TOKEN': csrfToken
+          }
+        });
 
-        // Reset form atau kasih notifikasi sukses
+        const id = response.data.id;
+        const name = this.form.name;
+        const message = `Halo, terdapat permohonan penggunaan sarpras dari ${name}. Silakan cek detailnya di: https://pinjam-sarpras.gdoank.my.id/applications/${id}`;
+
+        await this.sendMessage(message);
+
+        Swal.fire('Berhasil', 'Formulir berhasil dikirim.', 'success');
+        this.$router.push('/selesai');
         this.resetForm();
+
       } catch (error) {
         console.error(error);
-        alert('Terjadi kesalahan saat mengirim formulir.');
+        Swal.fire('Gagal', 'Terjadi kesalahan saat mengirim data.', 'error');
+      }
+    },
+    async sendMessage(message) {
+      try {
+        await axios.post(this.serverHost + "api/whatsapp/send-message", {
+          number: '6287865811603',
+          message: message,
+        });
+      } catch (error) {
+        console.error('Error sending WhatsApp message:', error);
       }
     },
     resetForm() {
@@ -191,7 +178,7 @@ export default {
         event_start_date: '',
         event_end_date: '',
         phone_number: '',
-        facility_id: '',
+        facility_id: [],
         notes: ''
       };
     },
@@ -199,10 +186,18 @@ export default {
       axios.get("/api/host")
         .then(response => {
           this.serverHost = response.data[0]?.host || null;
-
         })
         .catch(() => Swal.fire('Error', 'Gagal mendapatkan server host!', 'error'));
     },
   },
 };
 </script>
+
+<style scoped>
+.input-field {
+  @apply mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm;
+}
+.submit-btn {
+  @apply w-full py-2 px-4 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 font-medium shadow-sm;
+}
+</style>

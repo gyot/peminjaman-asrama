@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Application;
 use App\Models\Approvals;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Facility;
+use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class ApplicationController extends Controller
 {
@@ -37,21 +42,38 @@ class ApplicationController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            // 'user_id' => 'required|exists:users,id',
-            'facility_id' => 'required|exists:facilities,id',
-            'event_name' => 'required|string',
-            'name' => 'required|string',
-            'event_start_date' => 'required|date',
-            'event_end_date' => 'required|date',
-            'address' => 'required|string',
-            'phone_number' => 'required|string',
-            'notes' => 'nullable|string',
-        ]);
+{
+    // Validasi input
+    $validated = $request->validate([
+        'name' => 'required|string',
+        'address' => 'required|string',
+        'event_name' => 'required|string',
+        'event_start_date' => 'required|date',
+        'event_end_date' => 'required|date',
+        'phone_number' => 'required|string',
+        'notes' => 'nullable|string',
+        'facility_id' => 'required|array',
+        'facility_id.*' => 'exists:facilities,id',
+    ]);
 
-        return Application::create($validated);
-    }
+    // Simpan data ke tabel `applications`
+    $application = Application::create([
+        'name' => $validated['name'],
+        'address' => $validated['address'],
+        'event_name' => $validated['event_name'],
+        'event_start_date' => $validated['event_start_date'],
+        'event_end_date' => $validated['event_end_date'],
+        'phone_number' => $validated['phone_number'],
+        'notes' => $validated['notes'] ?? null,
+    ]);
+
+    // Simpan data ke pivot table `application_facility`
+    $application->facilities()->sync($validated['facility_id']);
+
+    return response()->json(['message' => 'Aplikasi berhasil disimpan.'], 201);
+}
+
+
 
     /**
      * Display the specified resource.
