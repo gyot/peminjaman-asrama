@@ -1,58 +1,87 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SELI - Sistem Elektronik Layanan Infrastruktur</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume Blogger - Gaya Cerah</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+  </style>
 </head>
-<body class="bg-gray-100">
-    <div x-data="{ open: false }" class="flex h-screen">
-        <!-- Sidebar -->
-        <div :class="open ? 'translate-x-0' : '-translate-x-full'" 
-             class="fixed inset-y-0 left-0 w-64 bg-blue-900 text-white transform transition-transform md:relative md:translate-x-0">
-            <div class="p-4 font-bold text-lg">LAYANAN BPMP NTB &emsp14;<button @click="open = !open" class="md:hidden text-white-900">☰</button></div>
-            <nav class="mt-4">
-                
-                <a href="#" class="block py-2 px-4 hover:bg-blue-700">Beranda</a>
-                <div x-data="{ expanded: false }">
-                    <button @click="expanded = !expanded" class="w-full text-left py-2 px-4 hover:bg-blue-700">Layanan</button>
-                    <div x-show="expanded" class="pl-4">
-                        <a href="#" class="block py-2 px-4 hover:bg-blue-700">Akses Perangkat Aktif</a>
-                        <a href="#" class="block py-2 px-4 hover:bg-blue-700">Collocation Server</a>
-                        <a href="#" class="block py-2 px-4 hover:bg-blue-700">Formulir Daring</a>
-                    </div>
-                </div>
-                <a href="#" class="block py-2 px-4 hover:bg-blue-700">Kontak Kami</a>
-            </nav>
-        </div>
-        
-        <!-- Content Area -->
-        <div class="flex-1 flex flex-col">
-            <!-- Header -->
-            <header class="flex justify-between items-center bg-white p-4 shadow-md">
-                <button @click="open = !open" class="md:hidden text-blue-900">☰</button>
-                <div class="text-xl font-semibold">Sistem Elektronik Layanan Infrastruktur</div>
-                <div>
-                    <button class="px-4 py-2 text-blue-900 border border-blue-900 rounded">Daftar</button>
-                    <button class="px-4 py-2 bg-blue-900 text-white rounded">Masuk</button>
-                </div>
-            </header>
-            
-            <!-- Main Content -->
-            <main class="p-6">
-                <div class="bg-white p-6 rounded shadow-md">
-                    <h1 class="text-2xl font-bold">SELI (Sistem Elektronik Layanan Infrastruktur)</h1>
-                    <p class="mt-2 text-gray-700">SELI adalah layanan untuk memenuhi kebutuhan infrastruktur TIK...</p>
-                    <ul class="list-disc pl-5 mt-4 text-gray-700">
-                        <li>SELI diperuntukkan untuk personal yang ditunjuk oleh satker</li>
-                        <li>SELI berlaku untuk unit kerja Kemendikbud</li>
-                        <li>Permohonan layanan harus menggunakan akun resmi</li>
-                    </ul>
-                </div>
-            </main>
-        </div>
+<body class="bg-white text-gray-800">
+  <!-- Hero Section -->
+  <section class="bg-teal-500 text-white py-20 text-center">
+    <img src="https://via.placeholder.com/150" alt="Foto Profil" class="mx-auto rounded-full w-40 h-40 border-4 border-white">
+    <h1 class="text-4xl font-bold mt-4">Nama Anda</h1>
+    <p class="text-lg mt-2">Blogger | Penulis | Kreator Konten</p>
+  </section>
+
+  <!-- Tentang Saya -->
+  <section class="py-16 px-6 max-w-3xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-4 text-orange-500">Tentang Saya</h2>
+    <p class="text-gray-700 leading-relaxed">
+      Saya adalah seorang blogger yang berfokus pada gaya hidup, teknologi, dan pengembangan diri. Saya suka berbagi wawasan dan inspirasi melalui tulisan yang informatif dan mudah dipahami.
+    </p>
+  </section>
+
+  <!-- Pengalaman -->
+  <section class="bg-gray-50 py-16 px-6">
+    <div class="max-w-3xl mx-auto">
+      <h2 class="text-2xl font-semibold mb-4 text-orange-500">Pengalaman</h2>
+      <ul class="space-y-4">
+        <li>
+          <h3 class="text-xl font-bold">Blogger Freelance</h3>
+          <p class="text-sm text-gray-600">2018 - Sekarang</p>
+          <p>Mengelola blog pribadi dan menulis untuk berbagai media online.</p>
+        </li>
+        <li>
+          <h3 class="text-xl font-bold">Copywriter di XYZ Agency</h3>
+          <p class="text-sm text-gray-600">2016 - 2018</p>
+          <p>Mengembangkan konten kreatif untuk kampanye digital klien.</p>
+        </li>
+      </ul>
     </div>
+  </section>
+
+  <!-- Portofolio -->
+  <section class="py-16 px-6 max-w-5xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-6 text-orange-500">Proyek & Portofolio</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div class="border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+        <img src="https://via.placeholder.com/400x200" alt="Proyek 1">
+        <div class="p-4">
+          <h3 class="font-bold">Judul Proyek 1</h3>
+          <p class="text-sm">Deskripsi singkat tentang proyek.</p>
+        </div>
+      </div>
+      <div class="border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+        <img src="https://via.placeholder.com/400x200" alt="Proyek 2">
+        <div class="p-4">
+          <h3 class="font-bold">Judul Proyek 2</h3>
+          <p class="text-sm">Deskripsi singkat tentang proyek.</p>
+        </div>
+      </div>
+      <div class="border rounded-lg overflow-hidden shadow hover:shadow-lg transition">
+        <img src="https://via.placeholder.com/400x200" alt="Proyek 3">
+        <div class="p-4">
+          <h3 class="font-bold">Judul Proyek 3</h3>
+          <p class="text-sm">Deskripsi singkat tentang proyek.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kontak -->
+  <section class="bg-orange-500 text-white py-16 text-center">
+    <h2 class="text-2xl font-semibold mb-4">Hubungi Saya</h2>
+    <p>Email: <a href="mailto:email@anda.com" class="underline">email@anda.com</a></p>
+    <p>Instagram: <a href="#" class="underline">@username</a></p>
+  </section>
+
+  <footer class="bg-gray-900 text-white text-center py-4">
+    <p>&copy; 2025 Nama Anda. Semua hak dilindungi.</p>
+  </footer>
 </body>
 </html>

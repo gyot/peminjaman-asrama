@@ -61,11 +61,20 @@ const router = createRouter({
 // Middleware untuk proteksi halaman
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
+  // if (to.meta.requiresAuth && !authStore.token) {
+  //   next("/login");
+  // } else {
+  //   next();
+  // }
   if (to.meta.requiresAuth && !authStore.token) {
+    localStorage.setItem("intendedRoute", to.fullPath);
     next("/login");
   } else {
     next();
   }
+  
+  
+  
 });
 
 export default router;

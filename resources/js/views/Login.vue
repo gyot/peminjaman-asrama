@@ -51,7 +51,15 @@ const handleLogin = async () => {
 
     try {
         await authStore.login(email.value, password.value);
+
+        const intended = localStorage.getItem('intendedRoute');
+        if (intended) {
+        localStorage.removeItem('intendedRoute');
+        router.push(intended);
+        } else {
         router.push('/applications');
+        }
+
     } catch (error) {
         errorMessage.value = 'Login gagal, periksa kembali email dan password.';
     }

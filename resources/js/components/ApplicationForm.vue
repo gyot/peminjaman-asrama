@@ -42,10 +42,24 @@
       <!-- Daftar Fasilitas -->
       <div v-if="facilities.length" class="space-y-2">
         <label class="block text-sm font-medium text-gray-700 mb-1">Daftar Aula/Asrama</label>
-        <div v-for="facility in facilities" :key="facility.id" class="flex items-center space-x-2">
+        <!-- <div v-for="facility in facilities" :key="facility.id" class="flex items-center space-x-2">
           <input type="checkbox" :value="facility.id" v-model="form.facility_id"
             class="text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />
           <span>{{ facility.name }} / {{ facility.price }} / {{ facility.unit }}</span>
+        </div> -->
+        <div v-for="facility in facilities" :key="facility.id"
+          class="flex items-center border rounded-lg p-4 shadow-sm hover:shadow-md transition bg-white"
+        >
+        <input type="checkbox" :value="facility.id" v-model="form.facility_id"
+      class="text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" />&emsp13;
+          <img :src="`/storage/${facility.image}`" alt="gambar" class="w-20 h-20 object-cover rounded-md mr-4" >
+          <div class="flex flex-col">
+            <label class="inline-flex items-center space-x-2">
+              <span class="text-lg font-medium">{{ facility.name }}</span>
+            </label>
+            <span class="text-sm text-gray-500 mt-1">{{ formatCurrency(facility.price) }} / {{ facility.unit }}</span>
+          </div>
+        </input>
         </div>
       </div>
       <div v-else class="text-red-500 text-sm">Gagal memuat fasilitas. Coba refresh halaman.</div>
@@ -90,6 +104,13 @@ export default {
     this.getServerHost();
   },
   methods: {
+    formatCurrency(value) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+      }).format(value);
+    },
     fetchFacilities() {
       axios.get('/api/facilities')
         .then((res) => {

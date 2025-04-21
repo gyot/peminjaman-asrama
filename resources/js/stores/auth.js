@@ -32,8 +32,7 @@ export const useAuthStore = defineStore("auth", {
                 console.error('Gagal mengambil data user:', error);
             }
         },
-
-        
+                
         logout() {
             localStorage.removeItem("token");
             this.token = null;
