@@ -28,18 +28,26 @@
             <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
                 <h3 class="text-xl font-semibold mb-4">Kirim Pesan Konfirmasi</h3>
                 <p class="mb-2">
-                    <strong>Nama:</strong>
-                    <input v-model="name" class="w-full border rounded p-2" placeholder="" />
+                    <strong>Tempat Lahir</strong>
+                    <input v-model="tempat_lahir" type="date" class="w-full border rounded p-2" placeholder="" />
                 </p>
                 <p class="mb-2">
-                    <strong>Email:</strong>
-                    <input v-model="email" class="w-full border rounded p-2"></input>
+                    <strong>Tanggal Lahir</strong>
+                    <input v-model="tanggal_lahir" type="date" class="w-full border rounded p-2"></input>
                 </p>
                 <p class="mb-2">
-                    <strong>Password:</strong>
-                    <input v-model="password" type="password" class="w-full border rounded p-2"></input>
+                    <strong>Alamat</strong>
+                    <input v-model="alamat" type="text" class="w-full border rounded p-2"></input>
                 </p>
-
+                <p class="mb-2">
+                    <strong>Nomor HP</strong>
+                    <input v-model="nomor_hp" type="text" class="w-full border rounded p-2"></input>
+                </p>
+                <p class="mb-2">
+                    <strong>Foto</strong>
+                    <input v-model="foto" type="file" class="w-full border rounded p-2"></input>
+                </p>              
+                
                 <div class="flex justify-end space-x-2">
                     <button @click="showModal = false"
                         class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition">Batal</button>
