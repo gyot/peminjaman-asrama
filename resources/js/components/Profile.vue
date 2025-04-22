@@ -45,7 +45,7 @@
                 </p>
                 <p class="mb-2">
                     <strong>Foto</strong>
-                    <input v-model="foto" type="file" class="w-full border rounded p-2"></input>
+                    <input type="file" @change="handleFileChange" class="w-full border rounded p-2">
                 </p>              
                 
                 <div class="flex justify-end space-x-2">
