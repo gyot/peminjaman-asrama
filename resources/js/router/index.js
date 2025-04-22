@@ -17,6 +17,11 @@ import ResetPassword from "../views/ResetPassword.vue";
 import ApplicationsDetail from "../views/ApplicationsDetail.vue";
 import NotFound from '../views/NotFound.vue';
 import Konfirmasi from "../views/Konfirmasi.vue";
+import Account from '../components/Account.vue';
+import Profile from '../components/Profile.vue';
+import Education from '../components/Education.vue';
+import Position from '../components/Position.vue';
+import User from '../views/User.vue';
 
 const routes = [
   { path: "/dashboard", component: Dashboard, meta: { requiresAuth: false } },
@@ -31,9 +36,18 @@ const routes = [
         { path: "/facilities", name: "facilities", component: Facilities },
         { path: "/users", name: "users", component: Users },
         { path: "/approvals", name: "approvals", component: Approvals },
-        // { path: "/dashboard", name: "dashboard", component: Dashboard },
         { path: "/applications/:id/detail/:approvalStatus", name: "detailapproval", component: ApplicationsDetail },
         { path: "/applications/:id", name: "detail", component: ApplicationsDetail },
+        { 
+          path: "/user", 
+          name: "user", 
+          component: User, 
+          children: [
+          { path: "account", name: "Account", component: Account},
+          { path: "profile", name: "Profile", component: Profile},
+          { path: "education", name: "Education", component: Education},
+          { path: "position", name: "Position", component: Position},
+        ]},
         
       ]
     },

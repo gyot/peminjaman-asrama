@@ -46,4 +46,14 @@ return new class extends Migration
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
+
+    public function educations()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    public function positions()
+    {
+        return $this->hasMany(Position::class);
+    }
 };

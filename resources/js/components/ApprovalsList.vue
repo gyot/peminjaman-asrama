@@ -11,8 +11,8 @@
             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Dikonfirmasi Oleh</th>
             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Pemesan</th>
             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Status</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Keterangan</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal</th>
+            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Kegiatan</th>
+            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Konfirmasi</th>
             <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Detail Pengajuan</th>
           </tr>
         </thead>
@@ -26,8 +26,9 @@
                 {{ approval.status }}
               </span>
             </td>
-            <td class="py-3 px-4">{{ approval.notes || '-' }}</td>
-            <td class="py-3 px-4">{{ formatDate(approval.created_at) }}</td>
+            <td class="py-3 px-4">{{ formatDate(approval.applications?.event_start_date) || '-' }} s.d. {{
+              formatDate(approval.applications?.event_end_date) || '-' }}</td>
+            <td class="py-3 px-4">{{ formatDateTime(approval.created_at) }}</td>
             <td class="py-3 px-4">
               <router-link :to="`/applications/${approval.id_applications}/detail/approvals/`"
                 class="bg-green-500 text-white px-4 py-2 rounded w-full block text-center hover:bg-green-600 transition-colors duration-300">
@@ -75,6 +76,22 @@ const statusClass = (status) => {
 const formatDate = (dateString) => {
   const options = { year: 'numeric', month: 'long', day: 'numeric' }
   return new Date(dateString).toLocaleDateString('id-ID', options)
+}
+
+const formatDateTime = (date) => {
+  const d = new Date(date);
+  const options = {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Makassar' // WITA
+  };
+
+  const formatter = new Intl.DateTimeFormat('id-ID', options);
+  return formatter.format(d) + ' WITA';
 }
 
 onMounted(fetchApprovals)

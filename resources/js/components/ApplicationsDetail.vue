@@ -45,7 +45,7 @@
     </div>
 
     <!-- Modal -->
-    <div v-if="approvalStatus" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
         <h3 class="text-xl font-semibold mb-4">Kirim Pesan Konfirmasi</h3>
         <p class="mb-2">
@@ -119,10 +119,19 @@ export default {
       }
     },
     openModal(status) {
+      console.log('open modal', status);
+      
       this.approvalStatus = status;
       this.showModal = true;
       this.number = this.application?.phone_number;
     },
+    closeModal() {
+            this.isModalOpen = false;
+            this.number = '';
+            this.message = '';
+            console.log('tutup modal');
+            
+        },
     async submit() {
       Swal.fire({
         title: 'Mohon tunggu...',

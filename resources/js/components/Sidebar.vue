@@ -59,7 +59,7 @@
         </li>
 
         <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
-          <router-link to="/users" class="text-white">Users</router-link>
+          <router-link to="/user/account" class="text-white">Profil</router-link>
         </li>
       </ul>
     </nav>

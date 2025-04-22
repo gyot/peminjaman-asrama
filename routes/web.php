@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\FacilityController;
 use App\Http\Controllers\Api\ApplicationController;
 use App\Http\Controllers\HostController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Api\Profile;
+use App\Http\Controllers\Api\EducationController;    
+use App\Http\Controllers\Api\PositionController;
 
 Route::prefix('api')->group(function () {
     Route::get('/host', [HostController::class, 'getHost']);
@@ -21,6 +24,9 @@ Route::prefix('api')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
     Route::get('approvals/', [ApplicationController::class, 'approvals']);
+    Route::get('profile/{id}', [Profile::class, 'getProfile']);
+    Route::get('educations/{id}', [EducationController::class, 'getEducation']);
+    Route::get('positions/{id}', [PositionController::class, 'getPosition']);
     
     // Route::get('rejection/{id}', [ApplicationController::class, 'rejection']);
 });
