@@ -43,7 +43,7 @@
 
                     <div class="mb-4">
                         <label class="block text-gray-700">Catatan Tambahan</label>
-                        <textarea v-model="form.description" class="w-full border rounded p-2" required></textarea>
+                        <textarea v-model="form.description" class="w-full border rounded p-2"></textarea>
                     </div>
                     <button @click="closeModal" class="px-4 py-2 bg-gray-300 rounded mr-2">Tutup</button>
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>

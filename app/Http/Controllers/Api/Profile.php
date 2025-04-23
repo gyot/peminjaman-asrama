@@ -21,9 +21,9 @@ class Profile extends Controller
 
     }
 
-    function updateProfile(Request $request, $id)
+    function updateProfile(Request $request)
     {
-        $userProfile = UserProfile::find($id);
+        $userProfile = UserProfile::find($request->id);
         if ($userProfile) {
             if ($request->hasFile('foto')) {
                 $file = $request->file('foto');
@@ -37,8 +37,9 @@ class Profile extends Controller
             $userProfile->tanggal_lahir = $request->tanggal_lahir;
             $userProfile->alamat = $request->alamat;
             $userProfile->nomor_hp = $request->nomor_hp;
-            
+            $userProfile->save();
             return response()->json($userProfile, 200, [], JSON_PRETTY_PRINT);
+
 
         } else {
             return response()->json(['message' => 'Data Tidak Ditemukan'], 404);

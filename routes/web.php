@@ -27,7 +27,7 @@ Route::prefix('api')->group(function () {
     Route::get('profile/{id}', [Profile::class, 'getProfile']);
     Route::get('educations/{id}', [EducationController::class, 'getEducation']);
     Route::get('positions/{id}', [PositionController::class, 'getPosition']);
-    
+    Route::post('update/profiles', [Profile::class, 'updateProfile']);
     // Route::get('rejection/{id}', [ApplicationController::class, 'rejection']);
 });
 
