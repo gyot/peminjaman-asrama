@@ -9,28 +9,43 @@ use App\Http\Controllers\Api\Profile;
 use App\Http\Controllers\Api\EducationController;    
 use App\Http\Controllers\Api\PositionController;
 
-Route::prefix('api')->group(function () {
-    Route::get('/host', [HostController::class, 'getHost']);
-    Route::get('/applications/update/{id}', [ApplicationController::class, 'update']);
-    Route::post('setFacilities', [FacilityController::class, 'store']);
-    Route::put('facilities/update/', [FacilityController::class, 'update']); // Changed to PUT method
-    Route::delete('facilities/{facility}', [FacilityController::class, 'destroy']);
-    Route::apiResource('facilities', FacilityController::class);
-    Route::apiResource('applications', ApplicationController::class);
-    Route::get('applications/{id}', [ApplicationController::class, 'show']);
-    Route::get('applications/{id}/detail/{approvalStatus}', [ApplicationController::class, 'show']);
-    // Route::post('applications/{id}/approval', [ApplicationController::class, 'setApproval']);
-    // Route::post('setApplications', [ApplicationController::class, 'store']);
-    Route::post('/login', [AuthController::class, 'login']);
+// AUTH
+Route::prefix('auth')->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1'); // Rate limit login
     Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
-    Route::get('approvals/', [ApplicationController::class, 'approvals']);
-    Route::get('profile/{id}', [Profile::class, 'getProfile']);
-    Route::get('educations/{id}', [EducationController::class, 'getEducation']);
-    Route::get('positions/{id}', [PositionController::class, 'getPosition']);
-    Route::post('update/profiles', [Profile::class, 'updateProfile']);
-    // Route::get('rejection/{id}', [ApplicationController::class, 'rejection']);
+    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 });
 
+// PUBLIC ROUTES
+
+// PROTECTED ROUTES
+Route::middleware('auth:sanctum')->prefix('api')->group(function () {
+    Route::get('/host', [HostController::class, 'getHost']);
+
+    // Applications
+    Route::apiResource('applications', ApplicationController::class)->except(['edit', 'create']);
+    Route::get('applications/{id}/detail/{approvalStatus}', [ApplicationController::class, 'detail']); // Custom detail route
+    Route::get('approvals', [ApplicationController::class, 'approvals']);
+
+    // Facilities
+    Route::apiResource('facilities', FacilityController::class)->except(['edit', 'create']);
+
+    // Profiles
+    Route::get('profile/{id}', [Profile::class, 'getProfile']);
+    Route::post('update/profiles', [Profile::class, 'updateProfile']);
+
+    // Positions
+    Route::get('positions/{id}', [PositionController::class, 'getPosition']);
+
+    // Educations
+    Route::get('/educations', [EducationController::class, 'index']);
+    Route::post('/educations', [EducationController::class, 'store']);
+    Route::put('/educations/{id}', [EducationController::class, 'update']); // now using PUT method
+    Route::delete('/educations/{id}', [EducationController::class, 'destroy']);
+});
+// Route::post('/login', [AuthController::class, 'login']);
+// Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
+// Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::get('/{any}', function () {
     return view('welcome'); // Ensure 'welcome' Blade file exists or replace with the correct file name
 })->where('any', '.*');

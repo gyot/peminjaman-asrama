@@ -28,8 +28,11 @@ class Profile extends Controller
             if ($request->hasFile('foto')) {
                 $file = $request->file('foto');
                 $filename = time() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('images'), $filename);
-                $userProfile->foto = 'images/' . $filename;
+                // Simpan ke storage/app/public/images
+                $path = $file->storeAs('public/images', $filename);
+
+                // Simpan path publik ke DB: storage/images/namafile.jpg
+                $userProfile->foto = str_replace('public/', 'storage/', $path);
             }else {
                 $userProfile->foto = $userProfile->foto;
             }

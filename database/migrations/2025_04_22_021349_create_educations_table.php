@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('jurusan')->nullable();
             $table->year('tahun_masuk');
             $table->year('tahun_lulus')->nullable();
+            $table->string('ijazah')->nullable();
             $table->timestamps();
         });
     }

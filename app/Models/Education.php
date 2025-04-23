@@ -22,17 +22,17 @@ class Education extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected $fillable = ['user_id','tingkat_pendidikan', 'institusi', 'jurusan', 'tahun_masuk', 'tahun_lulus'];
-    public function up(){
-        Schema::create('educations', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->string('tingkat_pendidikan');
-            $table->string('institusi');
-            $table->string('jurusan');
-            $table->date('tahun_masuk');
-            $table->date('tahun_lulus');
-            $table->timestamps();
-        });
-    }  
+    protected $fillable = ['user_id','tingkat_pendidikan', 'institusi', 'jurusan', 'tahun_masuk', 'tahun_lulus', 'ijazah'];
+    // public function up(){
+    //     Schema::create('educations', function (Blueprint $table) {
+    //         $table->id();
+    //         $table->foreignId('user_id')->constrained();
+    //         $table->string('tingkat_pendidikan');
+    //         $table->string('institusi');
+    //         $table->string('jurusan');
+    //         $table->date('tahun_masuk');
+    //         $table->date('tahun_lulus');
+    //         $table->timestamps();
+    //     });
+    // }  
 }
