@@ -109,7 +109,7 @@
         try {
           const response = await axios.get(`/api/profile/${this.authStore.user?.id}`);
           this.profile = response.data;
-          this.profile.foto = `/storage/images/${this.profile.foto}`;
+          this.profile.foto = `../storage/${this.profile.foto}`;
         } catch (error) {
           console.error("Gagal memuat profil:", error);
         } finally {

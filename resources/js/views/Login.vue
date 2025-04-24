@@ -55,7 +55,7 @@ const handleLogin = async () => {
         const intended = localStorage.getItem('intendedRoute');
         if (intended) {
         localStorage.removeItem('intendedRoute');
-        router.push(intended);
+        router.push('/applications');
         } else {
         router.push('/applications');
         }

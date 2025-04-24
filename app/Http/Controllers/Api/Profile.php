@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserProfile;
+use Illuminate\Support\Facades\Storage;
 
 class Profile extends Controller
 {
@@ -29,7 +30,7 @@ class Profile extends Controller
                 $file = $request->file('foto');
                 $filename = time() . '.' . $file->getClientOriginalExtension();
                 // Simpan ke storage/app/public/images
-                $path = $file->storeAs('public/images', $filename);
+                $path = $file->storeAs('images', $filename,'public');
 
                 // Simpan path publik ke DB: storage/images/namafile.jpg
                 $userProfile->foto = str_replace('public/', 'storage/', $path);
