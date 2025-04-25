@@ -1,21 +1,10 @@
 <template>
   <div>
-    <h2 class="text-xl font-bold mb-4">Data Pendidikan</h2>
+    <h2 class="text-xl font-bold mb-4">Riwayat Pendidikan</h2>
 
-    <form @submit.prevent="saveEducation" class="space-y-2">
-      <input v-model="form.tingkat_pendidikan" placeholder="Tingkat Pendidikan" class="input" required />
-      <input v-model="form.institusi" placeholder="Institusi" class="input" required />
-      <input v-model="form.jurusan" placeholder="Jurusan" class="input" />
-      <input v-model="form.tahun_masuk" type="date" placeholder="Tahun Masuk" class="input" required />
-      <input v-model="form.tahun_lulus" type="date" placeholder="Tahun Lulus" class="input" />
-      <input type="file" @change="handleFileUpload" class="input" />
+    <button @click="openModal()" class="btn-primary mb-4">+ Tambah Pendidikan</button>
 
-      <button type="submit" class="btn-primary">
-        {{ form.id ? 'Update' : 'Tambah' }} Pendidikan
-      </button>
-    </form>
-
-    <ul class="mt-4 space-y-2">
+    <ul class="space-y-2">
       <li v-for="edu in educations" :key="edu.id" class="border p-3 rounded">
         <div class="font-semibold">{{ edu.tingkat_pendidikan }} - {{ edu.institusi }}</div>
         <div class="text-sm">{{ edu.jurusan }} ({{ edu.tahun_masuk }} - {{ edu.tahun_lulus ?? 'Sekarang' }})</div>
@@ -26,6 +15,40 @@
         </div>
       </li>
     </ul>
+
+    <!-- Modal -->
+    <div v-if="showModal" class="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-bold mb-4">{{ form.id ? 'Edit Pendidikan' : 'Tambah Pendidikan' }}</h3>
+        <form @submit.prevent="saveEducation" class="space-y-2">
+          <label for="">Tingkat Pendidikan:</label>
+          <input v-model="form.tingkat_pendidikan" placeholder="Tingkat Pendidikan" class="input" required />
+          Institusi:
+          <input v-model="form.institusi" placeholder="Institusi" class="input" required />
+          Jurusan:
+          <input v-model="form.jurusan" placeholder="Jurusan" class="input" />
+          Pilih Tahun Masuk:
+          <select v-model="form.tahun_masuk" class="input" required>
+            <option disabled value="">Pilih Tahun Masuk</option>
+            <option v-for="tahun in tahunList" :key="'masuk-' + tahun" :value="tahun">{{ tahun }}</option>
+          </select>
+          Pilih Tahun Lulus:
+          <select v-model="form.tahun_lulus" class="input">
+            <option disabled value="">Pilih Tahun Lulus</option>
+            <option v-for="tahun in tahunList" :key="'lulus-' + tahun" :value="tahun">{{ tahun }}</option>
+          </select>
+          <label for="">Ijazah:</label>
+          <input type="file" @change="handleFileUpload" class="input" />
+
+          <div class="flex justify-between">
+            <button type="submit" class="btn-primary" :disabled="isLoading">
+              {{ isLoading ? 'Loading...' : (form.id ? 'Update' : 'Tambah') }} Pendidikan
+            </button>
+            <button @click.prevent="closeModal" type="button" class="btn-danger" :disabled="isLoading">Batal</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -35,6 +58,7 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 
 const educations = ref([])
+const showModal = ref(false)
 const form = ref({
   id: null,
   tingkat_pendidikan: '',
@@ -44,14 +68,34 @@ const form = ref({
   tahun_lulus: '',
 })
 const selectedFile = ref(null)
+const currentYear = new Date().getFullYear()
+const startYear = currentYear - 60
+const tahunList = Array.from({ length: 61 }, (_, i) => startYear + i)
 
 const handleFileUpload = (e) => {
   selectedFile.value = e.target.files[0]
 }
 
+const openModal = (education = null) => {
+  if (education) {
+    form.value = { ...education }
+  } else {
+    resetForm()
+  }
+  showModal.value = true
+  console.log(form.value.id);
+  
+}
+
+const closeModal = () => {
+  showModal.value = false
+  resetForm()
+}
+
 const fetchEducations = async () => {
   const res = await axios.get('/api/educations')
   educations.value = res.data
+  
 }
 
 const resetForm = () => {
@@ -67,7 +111,18 @@ const resetForm = () => {
 }
 
 const saveEducation = async () => {
+  
   try {
+    // Tampilkan loading Swal
+    Swal.fire({
+      title: 'Loading...',
+      text: 'Sedang menyimpan data, harap tunggu.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      },
+    })
+
     const formData = new FormData()
     for (const key in form.value) {
       formData.append(key, form.value[key])
@@ -75,26 +130,32 @@ const saveEducation = async () => {
     if (selectedFile.value) {
       formData.append('ijazah', selectedFile.value)
     }
-
+    let response;
     if (form.value.id) {
       formData.append('_method', 'PUT')
-      await axios.post(`/api/educations/${form.value.id}`, formData)
-      Swal.fire('Berhasil', 'Data berhasil diperbarui', 'success')
+      // await axios.post(`/api/educations/${form.value.id}`, formData)
+      response = await axios.post(`/api/educations/${form.value.id}`, formData)
+      console.log(response.data);
+      
+      Swal.fire('Berhasil', 'Data berhasil dirubah', 'success')
     } else {
       await axios.post('/api/educations', formData)
       Swal.fire('Berhasil', 'Data berhasil ditambahkan', 'success')
     }
 
-    resetForm()
+    closeModal()
     fetchEducations()
   } catch (err) {
     console.error(err)
     Swal.fire('Gagal', 'Gagal menyimpan data', 'error')
+  } finally {
+    // Tutup loading Swal
+    Swal.close()
   }
 }
 
 const editEducation = (edu) => {
-  form.value = { ...edu }
+  openModal(edu)
 }
 
 const deleteEducation = async (id) => {
@@ -105,8 +166,18 @@ const deleteEducation = async (id) => {
     confirmButtonText: 'Ya, hapus'
   })
   if (confirm.isConfirmed) {
+    Swal.fire({
+      title: 'Loading...',
+      text: 'Sedang menyimpan data, harap tunggu.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      },
+    })
     await axios.delete(`/api/educations/${id}`)
     fetchEducations()
+    Swal.close()
+    Swal.fire('Berhasil', 'Data berhasil dihapus', 'success')
   }
 }
 
@@ -121,18 +192,21 @@ onMounted(fetchEducations)
   border: 1px solid #ccc;
   border-radius: 0.5em;
 }
+
 .btn-primary {
   background-color: #2563eb;
   color: white;
   padding: 0.5em 1em;
   border-radius: 0.5em;
 }
+
 .btn-secondary {
   background-color: #eab308;
   padding: 0.3em 0.8em;
   border-radius: 0.5em;
   color: white;
 }
+
 .btn-danger {
   background-color: #dc2626;
   padding: 0.3em 0.8em;

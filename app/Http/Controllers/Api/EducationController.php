@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Education;
 use App\Models\User;
 use Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class EducationController extends Controller
 {
@@ -50,7 +53,7 @@ class EducationController extends Controller
     // }
     public function index()
     {
-        return Education::where('user_id', Auth::id())->get();
+        return Education::where('user_id', Auth::id())->orderBy('tahun_lulus','DESC')->get();
     }
 
     public function store(Request $request)
@@ -59,8 +62,8 @@ class EducationController extends Controller
             'tingkat_pendidikan' => 'required|string',
             'institusi' => 'required|string',
             'jurusan' => 'nullable|string',
-            'tahun_masuk' => 'required|date',
-            'tahun_lulus' => 'nullable|date',
+            'tahun_masuk' => 'required|string',
+            'tahun_lulus' => 'nullable|string',
             'ijazah' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 
@@ -77,21 +80,17 @@ class EducationController extends Controller
     public function update(Request $request, $id)
     {
         $education = Education::findOrFail($id);
-        if ($education->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $request->validate([
-            'tingkat_pendidikan' => 'required|string',
-            'institusi' => 'required|string',
-            'jurusan' => 'nullable|string',
-            'tahun_masuk' => 'required|integer',
-            'tahun_lulus' => 'nullable|integer',
-            'ijazah' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-        ]);
+        // $request->validate([
+        //     'tingkat_pendidikan' => 'required|string',
+        //     'institusi' => 'required|string',
+        //     'jurusan' => 'nullable|string',
+        //     // 'tahun_masuk' => 'required|string',
+        //     // 'tahun_lulus' => 'nullable|string',
+        //     'ijazah' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        // ]);
 
         $data = $request->only(['tingkat_pendidikan', 'institusi', 'jurusan', 'tahun_masuk', 'tahun_lulus']);
-
+        $data['user_id'] = Auth::id();
         if ($request->hasFile('ijazah')) {
             // Hapus ijazah lama
             if ($education->ijazah && Storage::disk('public')->exists($education->ijazah)) {
@@ -108,10 +107,9 @@ class EducationController extends Controller
     public function destroy($id)
     {
         $education = Education::findOrFail($id);
-        if ($education->user_id !== Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
+        // if ($education->user_id !== Auth::id()) {
+        //     return response()->json(['message' => 'Unauthorized'], 403);
+        // }
         if ($education->ijazah && Storage::disk('public')->exists($education->ijazah)) {
             Storage::disk('public')->delete($education->ijazah);
         }

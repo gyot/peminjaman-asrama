@@ -35,7 +35,10 @@ Route::middleware('auth:sanctum')->prefix('api')->group(function () {
     Route::post('update/profiles', [Profile::class, 'updateProfile']);
 
     // Positions
-    Route::get('positions/{id}', [PositionController::class, 'getPosition']);
+    // Route::get('/positions', [PositionController::class, 'index']);
+    // Route::post('/positions', [PositionController::class, 'store']);
+    // Route::put('/positions/{id}', [PositionController::class, 'update']); // now using PUT method
+    // Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
 
     // Educations
     Route::get('/educations', [EducationController::class, 'index']);
