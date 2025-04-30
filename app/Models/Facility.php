@@ -14,7 +14,10 @@ class Facility extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected $fillable = ['user_id','name', 'capacity', 'unit', 'price', 'image', 'description'];
+    protected $table = 'facilities';
+    protected $primaryKey = 'id';
+
+    protected $fillable = ['user_id','name', 'capacity', 'unit', 'price', 'image', 'description','status'];
     public function up(){
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
@@ -25,13 +28,14 @@ class Facility extends Model
             $table->decimal('price', 10, 2);
             $table->string('image')->nullable();
             $table->text('description')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }  
     
     public function applications()
     {
-        return $this->belongsToMany(Application::class, 'application_facility');
+        return $this->belongsToMany(Application::class, 'application_facility', 'facility_id', 'application_id');
     }
 
 }

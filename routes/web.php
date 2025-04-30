@@ -17,22 +17,30 @@ Route::prefix('auth')->group(function () {
 });
 
 // PUBLIC ROUTES
-
+Route::get('get/facilities', [FacilityController::class,'index']);
 // PROTECTED ROUTES
+Route::get('/host', [HostController::class, 'getHost']);
 Route::middleware('auth:sanctum')->prefix('api')->group(function () {
-    Route::get('/host', [HostController::class, 'getHost']);
-
+    
     // Applications
     Route::apiResource('applications', ApplicationController::class)->except(['edit', 'create']);
     Route::get('applications/{id}/detail/{approvalStatus}', [ApplicationController::class, 'detail']); // Custom detail route
     Route::get('approvals', [ApplicationController::class, 'approvals']);
-
+    
     // Facilities
-    Route::apiResource('facilities', FacilityController::class)->except(['edit', 'create']);
+    // Route::apiResource('facilities', [FacilityController::class,'index'])->only(['index']);
+    // Route::get('facilities/{id}/detail', [FacilityController::class,'show']);
+    // Route::get('facilities/{id}/edit', [FacilityController::class,'show']);
+    Route::get('facilities', [FacilityController::class,'index']);
+    Route::post('setFacilities/', [FacilityController::class,'store']);
+    Route::put('facilities/{id}', [FacilityController::class,'update']);
+    Route::delete('facilities/{facility}', [FacilityController::class,'destroy']);
+    // Route::get('facilities/{id}', [FacilityController::class,'show']);
 
     // Profiles
-    Route::get('profile/{id}', [Profile::class, 'getProfile']);
-    Route::post('update/profiles', [Profile::class, 'updateProfile']);
+    // Route::get('profile/{id}', [Profile::class, 'getProfile']);
+    Route::put('profile/profiles/{id}', [Profile::class, 'updateProfile']);
+    Route::post('profile', [Profile::class, 'store']);
 
     // Positions
     // Route::get('/positions', [PositionController::class, 'index']);
@@ -45,6 +53,10 @@ Route::middleware('auth:sanctum')->prefix('api')->group(function () {
     Route::post('/educations', [EducationController::class, 'store']);
     Route::put('/educations/{id}', [EducationController::class, 'update']); // now using PUT method
     Route::delete('/educations/{id}', [EducationController::class, 'destroy']);
+
+    // Account
+    // Route::get('/account', [Profile::class, 'me']);
+    Route::put('/account/{id}', [Profile::class, 'updateAccount']);
 });
 // Route::post('/login', [AuthController::class, 'login']);
 // Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);

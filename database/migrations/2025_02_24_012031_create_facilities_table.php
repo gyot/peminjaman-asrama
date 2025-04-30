@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->string('image')->nullable();
             $table->text('description')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

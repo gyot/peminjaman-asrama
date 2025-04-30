@@ -43,7 +43,6 @@ class ApplicationController extends Controller
      */
     public function store(Request $request)
 {
-    // Validasi input
     $validated = $request->validate([
         'name' => 'required|string',
         'address' => 'required|string',
@@ -56,21 +55,30 @@ class ApplicationController extends Controller
         'facility_id.*' => 'exists:facilities,id',
     ]);
 
-    // Simpan data ke tabel `applications`
-    $application = Application::create([
-        'name' => $validated['name'],
-        'address' => $validated['address'],
-        'event_name' => $validated['event_name'],
-        'event_start_date' => $validated['event_start_date'],
-        'event_end_date' => $validated['event_end_date'],
-        'phone_number' => $validated['phone_number'],
-        'notes' => $validated['notes'] ?? null,
-    ]);
+    DB::beginTransaction();
+    try {
+        $application = Application::create([
+            'name' => $validated['name'],
+            'address' => $validated['address'],
+            'event_name' => $validated['event_name'],
+            'event_start_date' => $validated['event_start_date'],
+            'event_end_date' => $validated['event_end_date'],
+            'phone_number' => $validated['phone_number'],
+            'notes' => $validated['notes'] ?? null,
+        ]);
 
-    // Simpan data ke pivot table `application_facility`
-    $application->facilities()->sync($validated['facility_id']);
+        $application->facilities()->sync($validated['facility_id']);
 
-    return response()->json(['message' => 'Aplikasi berhasil disimpan.'], 201);
+        DB::commit();
+        return response()->json([
+            'message' => 'Aplikasi berhasil disimpan.',
+            'data' => $application->load('facilities') // Memuat relasi 'facilities' jika diperlukan
+        ], 201);
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json(['message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+    }
 }
 
 

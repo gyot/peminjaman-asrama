@@ -103,7 +103,7 @@
       const intended = localStorage.getItem('intendedRoute');
       if (intended) {
         localStorage.removeItem('intendedRoute');
-        router.push('/applications');
+        router.push(intended);
       } else {
         router.push('/applications');
       }

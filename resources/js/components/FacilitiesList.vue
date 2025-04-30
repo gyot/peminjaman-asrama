@@ -1,60 +1,13 @@
 <template>
-    <div class="p-4 bg-white rounded-lg shadow-md">
-      <h1 class="text-2xl font-bold mb-4">Daftar Fasilitas</h1>
-      <button @click="openModal('add')" class="bg-blue-500 text-white px-4 py-2 rounded">
-        Tambah
-      </button>
+  <div class="p-4 bg-white rounded-lg shadow-md">
+    <h1 class="text-2xl font-bold mb-4">Daftar Fasilitas</h1>
+    <button @click="openModal('add')" class="bg-blue-500 text-white px-4 py-2 rounded">Tambah</button>
 
-        <!-- Modal -->
-        <transition name="fade">
-            <div v-if="isOpen" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow">
-                    <h2 class="text-2xl font-semibold mb-4">{{ modalTitle }}</h2>
-
-                    <form @submit.prevent="submitForm" enctype="multipart/form-data">
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Nama Fasilitas</label>
-                        <input v-model="form.name" type="text" class="w-full border rounded p-2" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Kapasitas</label>
-                        <input v-model="form.capacity" type="number" class="w-full border rounded p-2" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Satuan</label>
-                        <select v-model="form.unit" class="w-full border rounded p-2" required>
-                            <option value="Orang">Orang</option>
-                            <option value="Unit">Unit</option>
-                            <option value="Jam">Jam</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Harga</label>
-                        <input v-model="form.price" type="number" class="w-full border rounded p-2" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Gambar</label>
-                        <input type="file" @change="handleFileUpload" class="w-full border rounded p-2">
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-gray-700">Catatan Tambahan</label>
-                        <textarea v-model="form.description" class="w-full border rounded p-2"></textarea>
-                    </div>
-                    <button @click="closeModal" class="px-4 py-2 bg-gray-300 rounded mr-2">Tutup</button>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
-                    </form>
-                </div>
-            </div>
-        </transition>
-        <!-- End Modal -->
-      <table class="table-full border-collapse mt-4">
+    <!-- Tabel Responsif -->
+    <div class="overflow-x-auto mt-4">
+      <table class="table-auto w-full border-collapse border border-gray-300">
         <thead>
-          <tr>
+          <tr class="bg-gray-100">
             <th class="border px-4 py-2">Gambar</th>
             <th class="border px-4 py-2">Nama Fasilitas</th>
             <th class="border px-4 py-2">Kapasitas</th>
@@ -66,10 +19,12 @@
         </thead>
         <tbody>
           <tr v-for="facility in facilities" :key="facility.id">
-            <td class="border px-4 py-2 whitespace-nowrap"><img :src="'/storage/' + facility.image" alt="" width="100"></td>
+            <td class="border px-4 py-2 whitespace-nowrap">
+              <img :src="'/storage/' + facility.image" alt="" class="w-16 h-16 object-cover" />
+            </td>
             <td class="border px-4 py-2">{{ facility.name }}</td>
             <td class="border px-4 py-2">{{ facility.capacity }}</td>
-            <td class="border px-4 py-2">{{ facility.price }}</td>
+            <td class="border px-4 py-2">{{ formatCurrency(facility.price) }}</td>
             <td class="border px-4 py-2">{{ facility.unit }}</td>
             <td class="border px-4 py-2">{{ facility.description }}</td>
             <td class="border px-4 py-2">
@@ -80,157 +35,246 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Modal -->
+    <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <h3 class="text-xl font-semibold mb-4">{{ modalTitle }}</h3>
+        <form @submit.prevent="submitForm">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Nama Fasilitas</label>
+            <input v-model="form.name" type="text" class="w-full border rounded p-2" required />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Kapasitas</label>
+            <input v-model="form.capacity" type="number" class="w-full border rounded p-2" required />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Harga</label>
+            <input v-model="form.price" type="number" class="w-full border rounded p-2" required />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Unit</label>
+            <input v-model="form.unit" type="text" class="w-full border rounded p-2" required />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
+            <textarea v-model="form.description" class="w-full border rounded p-2" required></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Gambar</label>
+            <input type="file" @change="handleFileUpload" class="w-full border rounded p-2" />
+          </div>
+          <div class="flex justify-end space-x-2">
+            <button type="button" @click="closeModal" class="bg-gray-300 text-gray-700 px-4 py-2 rounded">Batal</button>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>
 
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import axios from "axios";
+import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
+
+const router = useRouter();
+const authStore = useAuthStore();
+
+const facilities = ref([]);
+const isOpen = ref(false);
+const modalTitle = ref("Tambah Fasilitas");
+const editMode = ref(false);
+const editId = ref(null);
+
+const form = ref({
+  user_id: null,
+  name: "",
+  capacity: "",
+  unit: "",
+  price: "",
+  image: null,
+  description: "",
+});
+
+const fetchDataProfil = async () => {
+  try {
+    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
+    console.log(response.data); // Lakukan sesuatu dengan data profil
+  } catch (error) {
+    router.push("/user/profile");
+    console.error("Gagal memuat profil:", error);
+  }
+};
+
+const fetchFacilities = async () => {
+  try {
+    const response = await axios.get("/api/facilities");
+    facilities.value = response.data;
+  } catch (error) {
+    console.error("Error fetching facilities:", error);
+    Swal.fire("Error", "Gagal mengambil data fasilitas", "error");
+  }
+};
+
+const openModal = (mode, facility = null) => {
+  isOpen.value = true;
+  editMode.value = mode === "edit";
+  modalTitle.value = editMode.value ? "Edit Fasilitas" : "Tambah Fasilitas";
+  if (editMode.value && facility) {
+    editId.value = facility.id;
+    form.value = { ...facility, image: null };
+  } else {
+    resetForm();
+  }
+};
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  }).format(value);
+};
+
+const closeModal = () => {
+  isOpen.value = false;
+  resetForm();
+};
+
+const handleFileUpload = (event) => {
+  form.value.image = event.target.files[0];
+};
+
+const submitForm = async () => {
+  if (!authStore.user) {
+    Swal.fire("Error", "User belum terautentikasi. Harap login terlebih dahulu.", "error");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("user_id", authStore.user.id);
+  formData.append("name", form.value.name);
+  formData.append("capacity", form.value.capacity);
+  formData.append("unit", form.value.unit);
+  formData.append("price", form.value.price);
+  formData.append("description", form.value.description);
+  if (form.value.image) {
+    formData.append("image", form.value.image);
+  }
+
+  try {
+    Swal.fire({
+      title: "Loading...",
+      text: "Sedang menyimpan data, harap tunggu.",
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading(),
+    });
+
+    if (editMode.value) {
+      formData.append("_method", "PUT");
+      await axios.post(`/api/facilities/${editId.value}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      Swal.fire("Berhasil", "Data fasilitas berhasil diperbarui", "success");
+    } else {
+      await axios.post("/api/setFacilities", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      Swal.fire("Berhasil", "Data fasilitas berhasil ditambahkan", "success");
+    }
+
+    fetchFacilities();
+    closeModal();
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    Swal.fire("Error", "Terjadi kesalahan saat menyimpan data", "error");
+  } finally {
+    Swal.close();
+  }
+};
+
+const deleteFacility = async (id) => {
+  const confirm = await Swal.fire({
+    title: "Yakin ingin hapus?",
+    text: "Data fasilitas akan dihapus secara permanen.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Ya, hapus",
+    cancelButtonText: "Batal",
+  });
+
+  if (confirm.isConfirmed) {
+    try {
+      Swal.fire({
+        title: "Loading...",
+        text: "Sedang menghapus data, harap tunggu.",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      await axios.delete(`/api/facilities/${id}`);
+      fetchFacilities();
+      Swal.fire("Berhasil", "Data fasilitas berhasil dihapus", "success");
+    } catch (error) {
+      console.error("Error deleting facility:", error);
+      Swal.fire("Error", "Terjadi kesalahan saat menghapus data", "error");
+    } finally {
+      Swal.close();
+    }
+  }
+};
+
+const resetForm = () => {
+  form.value = {
+    user_id: null,
+    name: "",
+    capacity: "",
+    unit: "",
+    price: "",
+    image: null,
+    description: "",
+  };
+  editMode.value = false;
+  editId.value = null;
+};
+
+onMounted(()=>{
+    fetchFacilities()
+  fetchDataProfil()
+  })
+
+onBeforeUnmount(() => {
+  // Bersihkan polling jika ada
+});
+</script>
+
 <style scoped>
-.fade-enter-active, .fade-leave-active {
-    transition: opacity 0.9s ease;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.9s ease;
 }
-.fade-enter, .fade-leave-to {
-    opacity: 0;
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 0.875rem;
+  }
+
+  th,
+  td {
+    padding: 0.5rem;
+  }
+
+  img {
+    width: 40px;
+    height: 40px;
+  }
 }
 </style>
-
-<script>
-import axios from 'axios';
-import { useAuthStore } from '../stores/auth';
-export default {
-    data() {
-        const authStore = useAuthStore(); // <--- dipanggil di dalam data()
-        return {
-            form: {
-                user_id: null,
-                name: '',
-                capacity: '',
-                unit: '',
-                price: '',
-                image: null,
-                description: ''
-            },
-            facilities: [],
-            pollingInterval: null, // Untuk menyimpan interval polling
-            isOpen: false,
-            modalTitle: 'Tambah Fasilitas',
-            editMode: false,
-            editId: null,
-            authStore,
-        };
-    },
-    created() {
-        this.fetchFacilities(); // Ambil data saat komponen dibuat
-        this.startPolling();    // Mulai polling
-        this.authStore.fetchUser(); // <--- fetch user di created
-    },
-    beforeDestroy() {
-        this.stopPolling();     // Hentikan polling saat komponen dihancurkan
-    },
-    methods: {
-        fetchFacilities() {
-            axios.get('/api/facilities')
-                .then((response) => {
-                    this.facilities = response.data; // Perbarui data fasilitas
-                })
-                .catch((error) => {
-                    console.error("Error fetching facilities:", error);
-                });
-        },
-        startPolling() {
-            this.pollingInterval = setInterval(() => {
-                this.fetchFacilities(); // Panggil fungsi untuk mengambil data setiap interval
-            }, 5000); // Interval 5 detik (5000 ms)
-        },
-        stopPolling() {
-            if (this.pollingInterval) {
-                clearInterval(this.pollingInterval); // Hentikan polling
-            }
-        },
-        openModal(mode, facility = null) {
-            this.isOpen = true;
-            this.editMode = mode === 'edit';
-            this.modalTitle = this.editMode ? 'Edit Fasilitas' : 'Tambah Fasilitas';
-            if (this.editMode && facility) {
-                this.editId = facility.id;
-                this.form = { ...facility, image: null };
-            } else {
-                this.resetForm();
-            }
-        },
-        closeModal() {
-            this.isOpen = false;
-            this.resetForm();
-        },
-        handleFileUpload(event) {
-            this.form.image = event.target.files[0];
-        },
-        async submitForm() {
-            if (!this.authStore.user) {
-                alert("User belum terautentikasi. Harap login terlebih dahulu.");
-                return;
-            }
-            let formData = new FormData();
-            formData.append("id", this.editId);
-            formData.append("user_id", this.authStore.user.id);
-            formData.append("name", this.form.name);
-            formData.append("capacity", this.form.capacity);
-            formData.append("unit", this.form.unit);
-            formData.append("price", this.form.price);
-            formData.append("description", this.form.description);
-            if (this.form.image) {
-                formData.append("image", this.form.image);
-            }
-
-            try {
-                console.log(this,this.editMode);
-                // return false;
-                if (this.editMode) {
-                    console.log(this.editId);
-                    
-                    await axios.post(`/api/facilities/update`, formData, {
-                        headers: { "Content-Type": "multipart/form-data" },
-                    });
-                }
-                 else {
-                    console.log(formData);
-                    await axios.post("/api/setFacilities", formData, {
-                        headers: { "Content-Type": "multipart/form-data" },
-                    });
-                }
-
-                this.fetchFacilities(); // Refresh data setelah submit
-                this.closeModal();
-            } catch (error) {
-                console.error("Error submitting form:", error);
-                if (error.response && error.response.data) {
-                    alert(`Terjadi kesalahan: ${error.response.data.message}`);
-                } else {
-                    alert("Terjadi kesalahan saat menyimpan data");
-                }
-            }
-        },
-        async deleteFacility(id) {
-            if (confirm("Apakah Anda yakin ingin menghapus fasilitas ini?")) {
-                try {
-                    await axios.delete(`/api/facilities/${id}`);
-                    this.fetchFacilities(); // Refresh data setelah delete
-                } catch (error) {
-                    console.error("Error deleting facility:", error);
-                    alert("Terjadi kesalahan saat menghapus data");
-                }
-            }
-        },
-        resetForm() {
-            this.form = {
-                user_id: null,
-                name: "",
-                capacity: "",
-                unit: "",
-                price: "",
-                image: null,
-                description: "",
-            };
-            this.editMode = false;
-            this.editId = null;
-        },
-    },
-};
-</script>

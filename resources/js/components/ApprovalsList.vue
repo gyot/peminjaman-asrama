@@ -4,40 +4,43 @@
 
     <div v-if="loading" class="text-gray-500">Loading data...</div>
     <div v-else>
-      <table class="min-w-full bg-white shadow rounded-lg overflow-hidden">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">ID</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Dikonfirmasi Oleh</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Pemesan</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Status</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Kegiatan</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Konfirmasi</th>
-            <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Detail Pengajuan</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="approval in approvals" :key="approval.id" class="border-b hover:bg-gray-50">
-            <td class="py-3 px-4">{{ approval.id }}</td>
-            <td class="py-3 px-4">{{ approval.user?.name || 'Tidak ditemukan' }}</td>
-            <td class="py-3 px-4">{{ approval.applications?.name || 'Tidak ditemukan' }}</td>
-            <td class="py-3 px-4">
-              <span :class="statusClass(approval.status)" class="px-2 py-1 rounded-full text-xs font-semibold">
-                {{ approval.status }}
-              </span>
-            </td>
-            <td class="py-3 px-4">{{ formatDate(approval.applications?.event_start_date) || '-' }} s.d. {{
-              formatDate(approval.applications?.event_end_date) || '-' }}</td>
-            <td class="py-3 px-4">{{ formatDateTime(approval.created_at) }}</td>
-            <td class="py-3 px-4">
-              <router-link :to="`/applications/${approval.id_applications}/detail/approvals/`"
-                class="bg-green-500 text-white px-4 py-2 rounded w-full block text-center hover:bg-green-600 transition-colors duration-300">
-                Detail
-              </router-link>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Wrapper untuk membuat tabel responsif -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow rounded-lg overflow-hidden">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="text-left py-3 px-4 uppercase font-semibold text-sm">ID</th>
+              <!-- <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Dikonfirmasi Oleh</th> -->
+              <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Pemesan</th>
+              <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Status</th>
+              <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Kegiatan</th>
+              <!-- <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tanggal Konfirmasi</th> -->
+              <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Detail Pengajuan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="approval in approvals" :key="approval.id" class="border-b hover:bg-gray-50">
+              <td class="py-3 px-4">{{ approval.id }}</td>
+              <!-- <td class="py-3 px-4">{{ approval.user?.name || 'Tidak ditemukan' }}</td> -->
+              <td class="py-3 px-4">{{ approval.applications?.name || 'Tidak ditemukan' }}</td>
+              <td class="py-3 px-4">
+                <span :class="statusClass(approval.status)" class="px-2 py-1 rounded-full text-xs font-semibold">
+                  {{ approval.status }}
+                </span>
+              </td>
+              <td class="py-3 px-4">{{ formatDate(approval.applications?.event_start_date) || '-' }} s.d. {{
+                formatDate(approval.applications?.event_end_date) || '-' }}</td>
+              <!-- <td class="py-3 px-4">{{ formatDateTime(approval.created_at) }}</td> -->
+              <td class="py-3 px-4">
+                <router-link :to="`/applications/${approval.id_applications}/detail/approvals/`"
+                  class="bg-green-500 text-white px-4 py-2 rounded w-full block text-center hover:bg-green-600 transition-colors duration-300">
+                  Detail
+                </router-link>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -45,7 +48,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
+const router = useRouter();
+const authStore = useAuthStore();
 const approvals = ref([])
 const loading = ref(true)
 
@@ -59,7 +66,15 @@ const fetchApprovals = async () => {
     loading.value = false
   }
 }
-
+const fetchDataProfil = async () => {
+  try {
+    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
+    console.log(response.data); // Lakukan sesuatu dengan data profil
+  } catch (error) {
+    router.push("/user/profile");
+    console.error("Gagal memuat profil:", error);
+  }
+};
 const statusClass = (status) => {
   switch (status) {
     case 'approved':
@@ -94,9 +109,29 @@ const formatDateTime = (date) => {
   return formatter.format(d) + ' WITA';
 }
 
-onMounted(fetchApprovals)
+onMounted(()=>{
+  fetchApprovals();
+  fetchDataProfil();
+});
 </script>
 
 <style scoped>
 /* Opsional: tambahkan style tambahan jika perlu */
+@media (max-width: 768px) {
+  table {
+    font-size: 0.875rem; /* Ukuran font lebih kecil */
+  }
+
+  th, td {
+    padding: 0.5rem; /* Padding lebih kecil */
+  }
+
+  td {
+    white-space: nowrap; /* Mencegah teks terpotong */
+  }
+
+  .overflow-x-auto {
+    overflow-x: auto; /* Aktifkan scroll horizontal */
+  }
+}
 </style>

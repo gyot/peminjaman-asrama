@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class Application extends Model
 {
     use HasFactory;
-
+    protected $table = 'applications';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'name', 'address', 'event_name', 'event_start_date', 'event_end_date', 'phone_number', 'notes'
     ];
@@ -29,7 +30,7 @@ class Application extends Model
             // $table->foreignId('user_id')->constrained();
             $table->string('name');
             $table->text('address');
-            $table->foreignId('facility_id')->constrained('facilities');
+            // $table->foreignId('facility_id')->constrained('facilities');
             $table->string('event_name');
             $table->date('event_start_date');
             $table->date('event_end_date');
@@ -45,15 +46,13 @@ class Application extends Model
     public function approval()
     {
         return $this->hasOne(Approvals::class, 'id_applications');
-    }
-
-
-    
+    }    
 
     public function facilities()
     {
-        return $this->belongsToMany(Facility::class, 'application_facility');
+        return $this->belongsToMany(Facility::class, 'application_facility', 'application_id', 'facility_id');
     }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? false, function ($query, $search) {

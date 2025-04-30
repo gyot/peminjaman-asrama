@@ -10,7 +10,7 @@
           <span class="text-base text-gray-800">{{ value }}</span>
         </div>
 
-        <!-- Fasilitas (karena many-to-many) -->
+        <!-- Fasilitas -->
         <div class="flex flex-col sm:col-span-2">
           <span class="text-sm text-gray-500">Fasilitas:</span>
           <ul class="list-disc list-inside text-base text-gray-800">
@@ -22,7 +22,6 @@
 
         <!-- Status Approval -->
         <div class="flex flex-col">
-          <!-- <span class="text-sm text-gray-500">sss{{ application.approval?.status }}:</span> -->
           <span :class="[
             'text-base font-semibold',
             application.approval?.status === 'approved' ? 'text-green-600' :
@@ -37,7 +36,7 @@
       <div v-else class="text-center text-gray-500 py-8">Memuat data...</div>
 
       <!-- Tombol Aksi -->
-      <div v-if="approval == null" class="mt-6 text-center space-x-4">
+      <div v-if="approval === null" class="mt-6 text-center space-x-4">
         <button @click="openModal('approved')" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">Setujui</button>
         <button @click="openModal('rejected')" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Tolak</button>
         <router-link to="/applications" class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Kembali</router-link>
@@ -56,7 +55,7 @@
         <textarea v-model="message" class="w-full border rounded p-2 mb-4" rows="4" placeholder="Tulis pesan di sini..."></textarea>
 
         <div class="flex justify-end space-x-2">
-          <button @click="showModal = false" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition">Batal</button>
+          <button @click="closeModal" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition">Batal</button>
           <button @click="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Kirim</button>
         </div>
       </div>
@@ -64,125 +63,137 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
-import { useAuthStore } from '../stores/auth';
-import Swal from 'sweetalert2';
+<script setup>
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+import Swal from "sweetalert2";
+import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
-export default {
-  data() {
-    const authStore = useAuthStore();
-    return {
-      id: this.$route.params.id,
-      approval: this.$route.params.approvalStatus ?? null,
-      application: null,
-      showModal: false,
-      approvalStatus: null,
-      message: '',
-      authStore,
-      id_user: authStore.user ? authStore.user.id : 0,
-      number: '',
-      serverHost: null,
-      facilities: [],
-    };
-  },
-  computed: {
-    details() {
-      return {
-        'Nama Pemohon': this.application?.name,
-        'Alamat': this.application?.address,
-        'Nama Kegiatan': this.application?.event_name,
-        'Tanggal Mulai': this.application?.event_start_date,
-        'Tanggal Selesai': this.application?.event_end_date,
-        'WhatsApp': this.application?.phone_number,
-        'Keterangan': this.application?.notes,
-        // 'Nama Fasilitas': this.application?.facilities?.map(f => f.name).join(', ') || '-',
-      };
-    },
-  },
-  created() {
-    this.authStore.fetchUser();
-    this.fetchData();
-  },
-  mounted() {
-    this.getServerHost();
-  },
-  methods: {
-    async fetchData() {
-      try {
-        const response = await axios.get(`/api/applications/${this.id}`);
-        this.application = response.data;
-        console.log('Fetched application:', this.application);
+// Router dan Auth
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
 
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    openModal(status) {
-      console.log('open modal', status);
-      
-      this.approvalStatus = status;
-      this.showModal = true;
-      this.number = this.application?.phone_number;
-    },
-    closeModal() {
-            this.isModalOpen = false;
-            this.number = '';
-            this.message = '';
-            console.log('tutup modal');
-            
-        },
-    async submit() {
-      Swal.fire({
-        title: 'Mohon tunggu...',
-        text: 'Sedang mengirim data',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
+// State
+const id = ref(route.params.id);
+const approval = ref(route.params.approvalStatus ?? null);
+const application = ref(null);
+const showModal = ref(false);
+const approvalStatus = ref(null);
+const message = ref("");
+const number = ref("");
+const serverHost = ref(null);
 
-      try {
-        await axios.post(`/api/applications/${this.id}/approval`, {
-          status: this.approvalStatus,
-          message: this.message,
-          id_user: this.authStore.user.id,
-          id_applications: this.id,
-        });
+// Computed untuk detail aplikasi
+const details = computed(() => ({
+  "Nama Pemohon": application.value?.name,
+  "Alamat": application.value?.address,
+  "Nama Kegiatan": application.value?.event_name,
+  "Tanggal Mulai": application.value?.event_start_date,
+  "Tanggal Selesai": application.value?.event_end_date,
+  "WhatsApp": application.value?.phone_number,
+  "Keterangan": application.value?.notes,
+}));
 
-        await this.sendMessage();
-        this.showModal = false;
-        await this.fetchData();
-      } catch (error) {
-        console.error(error);
-        Swal.fire('Error', 'Gagal mengirim data!', 'error');
-      }
-    },
-    async sendMessage() {
-      if (!this.number || !this.message) {
-        Swal.fire('Error', 'Nomor WhatsApp dan pesan tidak boleh kosong!', 'error');
-        return;
-      }
-      try {
-        await axios.post(this.serverHost + "api/whatsapp/send-message", {
-          number: this.number,
-          message: this.message,
-        });
-        Swal.fire('Sukses', 'Pesan berhasil dikirim!', 'success');
-        this.$router.push('/applications');
-      } catch (error) {
-        Swal.fire('Error', 'Gagal mengirim pesan WhatsApp! Periksa koneksi WhatsApp Gateway.', 'error');
-      }
-    },
-    getServerHost() {
-      axios.get("/api/host")
-        .then(response => {
-          this.serverHost = response.data[0]?.host || null;
-        })
-        .catch(() => Swal.fire('Error', 'Gagal mendapatkan server host!', 'error'));
-    },
+// Fetch data aplikasi
+const fetchData = async () => {
+  try {
+    const response = await axios.get(`/api/applications/${id.value}`);
+    application.value = response.data;
+  } catch (error) {
+    console.error("Error fetching application data:", error);
   }
 };
+
+// Buka modal
+const openModal = (status) => {
+  approvalStatus.value = status;
+  showModal.value = true;
+  number.value = application.value?.phone_number;
+};
+
+// Tutup modal
+const closeModal = () => {
+  showModal.value = false;
+  number.value = "";
+  message.value = "";
+};
+
+// Submit approval
+const submit = async () => {
+  Swal.fire({
+    title: "Mohon tunggu...",
+    text: "Sedang mengirim data",
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading(),
+  });
+
+  try {
+    await axios.post(`/api/applications/${id.value}/approval`, {
+      status: approvalStatus.value,
+      message: message.value,
+      id_user: authStore.user.id,
+      id_applications: id.value,
+    });
+
+    await sendMessage();
+    showModal.value = false;
+    await fetchData();
+    Swal.fire("Sukses", "Data berhasil dikirim!", "success");
+  } catch (error) {
+    console.error("Error submitting approval:", error);
+    Swal.fire("Error", "Gagal mengirim data!", "error");
+  }
+};
+
+// Kirim pesan WhatsApp
+const sendMessage = async () => {
+  if (!number.value || !message.value) {
+    Swal.fire("Error", "Nomor WhatsApp dan pesan tidak boleh kosong!", "error");
+    return;
+  }
+  try {
+    await axios.post(`${serverHost.value}api/whatsapp/send-message`, {
+      number: number.value,
+      message: message.value,
+    });
+    Swal.fire("Sukses", "Pesan berhasil dikirim!", "success");
+    router.push("/applications");
+  } catch (error) {
+    console.error("Error sending WhatsApp message:", error);
+    Swal.fire("Error", "Gagal mengirim pesan WhatsApp! Periksa koneksi WhatsApp Gateway.", "error");
+  }
+};
+
+// Fetch server host
+const getServerHost = async () => {
+  try {
+    const response = await axios.get("/host");
+    serverHost.value = response.data[0]?.host || null;
+  } catch (error) {
+    console.error("Error fetching server host:", error);
+    Swal.fire("Error", "Gagal mendapatkan server host!", "error");
+  }
+};
+
+const fetchDataProfil = async () => {
+  try {
+    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
+    console.log(response.data); // Lakukan sesuatu dengan data profil
+  } catch (error) {
+    router.push("/user/profile");
+    console.error("Gagal memuat profil:", error);
+  }
+};
+
+// Lifecycle hook
+onMounted(() => {
+  authStore.fetchUser();
+  fetchData();
+  getServerHost();
+  fetchDataProfil();
+});
 </script>
 
 <style scoped>

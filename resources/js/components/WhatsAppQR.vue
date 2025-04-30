@@ -2,8 +2,8 @@
   <div class="qr-container">
     <div class="p-4">
       <h2>Update Host</h2>
-      <input v-model="host" placeholder="Masukkan Host https://abcd" />
-      <button @click="updateHost()">Kirim</button>
+      <input v-model="host" placeholder="Masukkan Host https://abcd" class="border rounded p-2" />
+      <button @click="updateHost" class="bg-blue-500 text-white px-4 py-2 rounded">Kirim</button>
     </div>
     <h2>Scan QR Code WhatsApp</h2>
     <img v-if="qrCode" :src="qrCode" alt="QR Code WhatsApp" />
@@ -11,90 +11,116 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
-export default {
-  data() {
-    return {
-      qrCode: null,
-      number: '',
-      message: '',
-      serverHost: '',
-      interval: null, // Untuk menyimpan referensi interval
-    };
-  },
-  methods: {
-    fetchQRCode(host) {
-      axios.get(host + "api/whatsapp/qr-code")
-      .then((response) => {
-        console.log("QR Code response:", response.data);
+const router = useRouter();
+const authStore = useAuthStore();
+const qrCode = ref(null);
+const number = ref("");
+const message = ref("");
+const serverHost = ref("");
+const interval = ref(null);
+const host = ref("");
 
-        if (response.data.qr_code) {
-          this.qrCode = response.data.qr_code;
-          console.log("QR Code berhasil diatur:", this.qrCode);
-        } else {
-          if (response.data.status === "authenticated") {
-            console.log("QR Code sudah di-scan dan terautentikasi!");
-            clearInterval(this.pollingInterval); // stop polling
-          } else {
-            console.log("QR Code mungkin sudah di-scan atau kadaluarsa.");
-          }
-          this.qrCode = null;
-        }
-      })
-      .catch((error) => {
-        if (error.response && error.response.status === 404) {
-          console.log("QR sudah discan"); // Ini yang kamu mau
-          // alert("QR sudah discan, silakan lanjutkan!");
-          // Atau update UI sesuai kebutuhan
-        } else {
-          console.error("Error fetching QR Code:", error);
-          // alert("Terjadi kesalahan saat mengambil QR Code.");
-        }
-      });
-    },
-    async sendMessage() {
-      try {
-        console.log("Mengirim ke:", this.number);
-        const response = await axios.post(this.serverHost + "/send-message", {
-          number: this.number,
-          message: this.message,
-        });
-        console.log("Respon server:", response.data);
-        alert(response.data.message);
-      } catch (error) {
-        console.error("Error:", error.response?.data || error.message);
-        alert("Gagal mengirim pesan! Cek konsol untuk detail.");
+// Fungsi untuk mengambil QR Code
+const fetchQRCode = async (host) => {
+  try {
+    const response = await axios.get(`${host}api/whatsapp/qr-code`);
+    console.log("QR Code response:", response.data);
+
+    if (response.data.qr_code) {
+      qrCode.value = response.data.qr_code;
+      console.log("QR Code berhasil diatur:", qrCode.value);
+    } else {
+      if (response.data.status === "authenticated") {
+        console.log("QR Code sudah di-scan dan terautentikasi!");
+        clearInterval(interval.value); // Hentikan polling
+      } else {
+        console.log("QR Code mungkin sudah di-scan atau kadaluarsa.");
       }
-    },
-    getServerHost() {
-      axios.get("/api/host")
-        .then((response) => {
-          console.log(response.data[0].host);
-          if (response.data[0].host) {
-            this.serverHost = response.data[0].host;
-            console.log(this.serverHost + " test "); // Log serverHost setelah di-set
-            this.fetchQRCode(response.data[0].host); // Panggil fetchQRCode setelah serverHost di-set
-            this.interval = setInterval(() => {
-              this.fetchQRCode(response.data[0].host);
-            }, 5000); // Refresh QR Code setiap 5 detik
-          } else {
-            console.error("Host tidak ditemukan");
-          }
-        })
-        .catch((error) => console.error("Error fetching server host:", error));
-    },
-  },
-  mounted() {
-    this.getServerHost(); // Hanya panggil getServerHost di sini
-  },
-  beforeDestroy() {
-    if (this.interval) {
-      clearInterval(this.interval); // Bersihkan interval saat komponen dihancurkan
+      qrCode.value = null;
     }
-  },
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      console.log("QR sudah discan");
+    } else {
+      console.error("Error fetching QR Code:", error);
+    }
+  }
 };
+
+// Fungsi untuk mengirim pesan
+const sendMessage = async () => {
+  try {
+    console.log("Mengirim ke:", number.value);
+    const response = await axios.post(`${serverHost.value}/send-message`, {
+      number: number.value,
+      message: message.value,
+    });
+    console.log("Respon server:", response.data);
+    alert(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response?.data || error.message);
+    alert("Gagal mengirim pesan! Cek konsol untuk detail.");
+  }
+};
+
+// Fungsi untuk mendapatkan host server
+const getServerHost = async () => {
+  try {
+    const response = await axios.get("host");
+    console.log(response.data[0].host);
+    if (response.data[0].host) {
+      serverHost.value = response.data[0].host;
+      console.log(`${serverHost.value} test`); // Log serverHost setelah di-set
+      fetchQRCode(serverHost.value); // Panggil fetchQRCode setelah serverHost di-set
+      interval.value = setInterval(() => {
+        fetchQRCode(serverHost.value);
+      }, 5000); // Refresh QR Code setiap 5 detik
+    } else {
+      console.error("Host tidak ditemukan");
+    }
+  } catch (error) {
+    console.error("Error fetching server host:", error);
+  }
+};
+
+// Fungsi untuk memperbarui host
+const updateHost = async () => {
+  try {
+    const response = await axios.post("host", { host: host.value });
+    console.log("Host diperbarui:", response.data);
+    alert("Host berhasil diperbarui!");
+    getServerHost(); // Refresh host setelah diperbarui
+  } catch (error) {
+    console.error("Error updating host:", error);
+    alert("Gagal memperbarui host! Cek konsol untuk detail.");
+  }
+};
+const fetchDataProfil = async () => {
+  try {
+    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
+    console.log(response.data); // Lakukan sesuatu dengan data profil
+  } catch (error) {
+    router.push("/user/profile");
+    console.error("Gagal memuat profil:", error);
+  }
+};
+// Lifecycle hooks
+onMounted(() => {
+  getServerHost(); // Panggil getServerHost saat komponen dimuat
+  fetchDataProfil();
+});
+
+onBeforeUnmount(() => {
+  if (interval.value) {
+    clearInterval(interval.value); // Bersihkan interval saat komponen dihancurkan
+  }
+});
 </script>
 
 <style scoped>

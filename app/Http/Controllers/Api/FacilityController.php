@@ -11,7 +11,7 @@ class FacilityController extends Controller
 {
     public function index()
     {
-        return response()->json(Facility::all(), 200);
+        return response()->json(Facility::where('status','<>','dihapus')->get(), 200);
     }
 
     public function store(Request $request)
@@ -28,7 +28,8 @@ class FacilityController extends Controller
                 'unit' => $request->unit,
                 'price' => $request->price,
                 'image' => $gambarPath,
-                'description' => $request->description
+                'description' => $request->description,
+                'status' => ''
             ]);
 
             return response()->json(['message' => 'Fasilitas berhasil ditambahkan!', 'data' => $fasilitas], 201);
@@ -68,13 +69,14 @@ class FacilityController extends Controller
     public function destroy(Facility $facility)
     {
         try {
-            if ($facility->image) {
-                Storage::disk('public')->delete($facility->image);
-            }
-            $facility->delete();
-            return response()->noContent();
+            // Update status fasilitas menjadi "dihapus"
+            $facility->update([
+                'status' => 'dihapus', // Pastikan kolom 'status' ada di tabel 'facilities'
+            ]);
+
+            return response()->json(['message' => 'Status fasilitas berhasil diperbarui menjadi dihapus'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete facility', 'message' => $e->getMessage()], 500);
+            return response()->json(['error' => 'Failed to update facility status', 'message' => $e->getMessage()], 500);
         }
     }
 
