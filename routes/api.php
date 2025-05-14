@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\FacilityController;
 use App\Http\Controllers\Api\ApplicationController;
-use App\Http\Controllers\Api\Profile;
+// use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\EducationController;
 use App\Http\Controllers\Api\PositionController;
@@ -16,5 +16,8 @@ Route::post('applications/{id}/approval', [ApplicationController::class, 'setApp
     Route::post('/positions', [PositionController::class, 'store']);
     Route::put('/positions/{id}', [PositionController::class, 'update']); // now using PUT method
     Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
-    Route::get('/profile/{id}', [Profile::class, 'getProfile']);
+    // Route::get('/profile/{id}', [ProfileController::class, 'getProfile']);
     // Route::get('facilitiess', [FacilityController::class,'index']);
+
+    
+    

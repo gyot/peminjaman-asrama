@@ -101,15 +101,15 @@ const updateHost = async () => {
     alert("Gagal memperbarui host! Cek konsol untuk detail.");
   }
 };
-const fetchDataProfil = async () => {
-  try {
-    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
-    console.log(response.data); // Lakukan sesuatu dengan data profil
-  } catch (error) {
-    router.push("/user/profile");
-    console.error("Gagal memuat profil:", error);
-  }
-};
+// const fetchDataProfil = async () => {
+//   try {
+//     const response = await axios.get(`/api/profile/${authStore.user?.id}`);
+//     console.log(response.data); // Lakukan sesuatu dengan data profil
+//   } catch (error) {
+//     router.push("/user/profile");
+//     console.error("Gagal memuat profil:", error);
+//   }
+// };
 // Lifecycle hooks
 onMounted(() => {
   getServerHost(); // Panggil getServerHost saat komponen dimuat

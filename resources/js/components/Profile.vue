@@ -95,18 +95,28 @@ const details = computed(() => [
 ]);
 
 const fetchData = async () => {
-  isLoading.value = true;
-  try {
-    const response = await axios.get(`/api/profile/1`);
-    profile.value = response.data;
-    profile.value.foto = `../storage/${profile.value.foto}`;
+  // const response = await axios.get(`/api/profile/1`);
+  // const fetchData = async () => {
+    try {
+      const response = await axios.get("/api/profile/");
+      console.log(response.data);
+    application.value = response.data;
   } catch (error) {
-    statusEdit.value = "create";
-    showModal.value = true;
-    console.error("Gagal memuat profil:", error);
-  } finally {
-    isLoading.value = false;
+    console.error(error);
   }
+// };
+  // isLoading.value = true;
+  // try {
+  //   const response = await axios.get(`/api/profile/1`);
+  //   profile.value = response.data;
+  //   profile.value.foto = `../storage/${profile.value.foto}`;
+  // } catch (error) {
+  //   statusEdit.value = "create";
+  //   showModal.value = true;
+  //   console.error("Gagal memuat profil:", error);
+  // } finally {
+  //   isLoading.value = false;
+  // }
 };
 
 const openModal = () => {

@@ -61,15 +61,15 @@ const form = ref({
 })
 const selectedFile = ref(null)
 
-const fetchDataProfil = async () => {
-  try {
-    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
-    console.log(response.data); // Lakukan sesuatu dengan data profil
-  } catch (error) {
-    router.push("/user/profile");
-    console.error("Gagal memuat profil:", error);
-  }
-};
+// const fetchDataProfil = async () => {
+//   try {
+//     const response = await axios.get(`/api/profile/${authStore.user?.id}`);
+//     console.log(response.data); // Lakukan sesuatu dengan data profil
+//   } catch (error) {
+//     router.push("/user/profile");
+//     console.error("Gagal memuat profil:", error);
+//   }
+// };
 
 const handleFileUpload = (e) => {
   selectedFile.value = e.target.files[0]

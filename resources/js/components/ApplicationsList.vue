@@ -81,15 +81,14 @@ const paginatedData = computed(() => {
   return filteredData.value.slice(start, start + itemsPerPage.value);
 });
 
-const fetchDataProfil = async () => {
-  try {
-    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
-    // console.log(response.data); // Lakukan sesuatu dengan data profil
-  } catch (error) {
-    router.push("/user/profile");
-    console.error("Gagal memuat profil:", error);
-  }
-};
+// const fetchDataProfil = async () => {
+//   try {
+//     const response = await axios.get(`/api/profile/${authStore.user?.id}`);
+//   } catch (error) {
+//     router.push("/user/profile");
+//     console.error("Gagal memuat profil:", error);
+//   }
+// };
 
 const formatDateTime = (date) => {
   const d = new Date(date);

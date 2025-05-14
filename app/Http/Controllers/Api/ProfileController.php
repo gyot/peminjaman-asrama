@@ -8,12 +8,12 @@ use App\Models\User;
 use App\Models\UserProfile;
 use Illuminate\Support\Facades\Storage;
 
-class Profile extends Controller
+class ProfileController extends Controller
 {
     //
-    function getProfile($id)
+    function getProfile()
     {
-        $userProfile = UserProfile::with('user')->find($id);
+        $userProfile = UserProfile::with('user')->find(1);
         if ($userProfile) {
             return response()->json($userProfile, 200, [], JSON_PRETTY_PRINT);
         } else {
