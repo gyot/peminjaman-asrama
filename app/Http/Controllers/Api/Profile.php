@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Storage;
 class Profile extends Controller
 {
     //
-    function getProfile($id)
+    function show($id)
     {
-        $userProfile = UserProfile::with('user')->find($id);
+        $userProfile = UserProfile::with('user')->where('user_id','=',$id)->get();
         if ($userProfile) {
             return response()->json($userProfile, 200, [], JSON_PRETTY_PRINT);
         } else {

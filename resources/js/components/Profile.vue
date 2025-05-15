@@ -66,13 +66,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from "vue";
+import { ref, reactive, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../stores/auth";
 
 const authStore = useAuthStore();
-
 const profile = ref(null);
 const form = reactive({
   tempat_lahir: "",
@@ -95,15 +94,17 @@ const details = computed(() => [
 ]);
 
 const fetchData = async () => {
+  if (!authStore.user?.id) return;
   isLoading.value = true;
   try {
-    const response = await axios.get(`/api/profile/1`);
-    profile.value = response.data;
-    profile.value.foto = `../storage/${profile.value.foto}`;
+    const response = await axios.get(`/api/profile/${authStore.user.id}`);
+    // console.log(response.request.responseURL);
+    profile.value = response.data[0];
+    profile.value.foto = profile.value.foto ? `../storage/${profile.value.foto}` : null;
   } catch (error) {
+    // console.error("Gagal memuat profil:", error);
     statusEdit.value = "create";
     showModal.value = true;
-    console.error("Gagal memuat profil:", error);
   } finally {
     isLoading.value = false;
   }
@@ -140,11 +141,14 @@ const closeModal = () => {
 
 const handleFileChange = (event) => {
   const file = event.target.files[0];
-  form.foto = URL.createObjectURL(file);
-  form.fotoFile = file;
+  if (file) {
+    form.foto = URL.createObjectURL(file);
+    form.fotoFile = file;
+  }
 };
 
 const dateFormat = (dateString) => {
+  if (!dateString) return "-";
   return new Date(dateString).toLocaleDateString("id-ID", { year: "numeric", month: "long", day: "numeric" });
 };
 
@@ -170,68 +174,38 @@ const submitForm = async () => {
       allowOutsideClick: false,
       didOpen: () => Swal.showLoading(),
     });
-    console.log(statusEdit.value);
-    
+
+    let response;
     if (statusEdit.value === "edit") {
       formData.append("_method", "PUT");
-      const response = await axios.post(`/api/profile/profiles/${authStore.user?.id}`, formData, {
+      response = await axios.post(`/api/profile/profiles/${authStore.user.id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      profile.value = response.data;
-      profile.value.foto = `../storage/${profile.value.foto}`;
-      Swal.fire("Berhasil", "Data berhasil diperbarui.", "success");
-    } else if (statusEdit.value === "create") {
-      const response = await axios.post("/api/profile", formData, {
+    } else {
+      response = await axios.post("/api/profile", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      profile.value = response.data;
-      profile.value.foto = `../storage/${profile.value.foto}`;
-      Swal.fire("Berhasil", "Data berhasil ditambahkan.", "success");
     }
+
+    profile.value = response.data;
+    profile.value.foto = profile.value.foto ? `../storage/${profile.value.foto}` : null;
+    Swal.fire("Berhasil", "Data berhasil disimpan.", "success");
   } catch (error) {
     console.error("Gagal memproses data:", error);
-    Swal.fire("Error", "Terjadi kesalahan saat memproses data.", "error");
+    Swal.fire("Error", "Terjadi kesalahan saat menyimpan data.", "error");
   } finally {
     showModal.value = false;
     Swal.close();
   }
 };
 
-onMounted(() => {
-  authStore.fetchUser();
-  fetchData();
+onMounted(async () => {
+  await authStore.fetchUser();
+  await fetchData();
 });
 </script>
 
 <style scoped>
-/* Spinner animation sudah diatur pakai animate-spin di Tailwind */
-/* Gaya untuk membuat Swal fullscreen */
-.swal-fullscreen-popup {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  color: white !important;
-  text-align: center !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-.swal-fullscreen-popup .swal2-title {
-  font-size: 2rem !important;
-  color: white !important;
-}
-
-.swal-fullscreen-popup .swal2-content {
-  font-size: 1.2rem !important;
-  color: white !important;
-}
-
-.swal-fullscreen-popup .swal2-spinner {
-  border-color: white !important;
-  border-top-color: transparent !important;
-}
+/* Tambahan style opsional */
 </style>
+    

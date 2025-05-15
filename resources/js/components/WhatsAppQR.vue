@@ -103,7 +103,7 @@ const updateHost = async () => {
 };
 const fetchDataProfil = async () => {
   try {
-    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
+    const response = await axios.get(window.location.origin+`/api/profile/${authStore.user?.id}`);
     console.log(response.data); // Lakukan sesuatu dengan data profil
   } catch (error) {
     router.push("/user/profile");

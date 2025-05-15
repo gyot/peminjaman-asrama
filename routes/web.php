@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\Profile;
 use App\Http\Controllers\Api\EducationController;    
 use App\Http\Controllers\Api\PositionController;
+use App\Http\Controllers\Api\DataController;
 
 // AUTH
 Route::prefix('auth')->group(function () {
@@ -19,6 +20,7 @@ Route::prefix('auth')->group(function () {
 // PUBLIC ROUTES
 Route::get('get/facilities', [FacilityController::class,'index']);
 // PROTECTED ROUTES
+    Route::get('data_diri/{id}', [DataController::class,'show']);
 Route::get('/host', [HostController::class, 'getHost']);
 Route::middleware('auth:sanctum')->prefix('api')->group(function () {
     
@@ -26,6 +28,8 @@ Route::middleware('auth:sanctum')->prefix('api')->group(function () {
     Route::apiResource('applications', ApplicationController::class)->except(['edit', 'create']);
     Route::get('applications/{id}/detail/{approvalStatus}', [ApplicationController::class, 'detail']); // Custom detail route
     Route::get('approvals', [ApplicationController::class, 'approvals']);
+    
+     // Applications
     
     // Facilities
     // Route::apiResource('facilities', [FacilityController::class,'index'])->only(['index']);
@@ -41,6 +45,7 @@ Route::middleware('auth:sanctum')->prefix('api')->group(function () {
     // Route::get('profile/{id}', [Profile::class, 'getProfile']);
     Route::put('profile/profiles/{id}', [Profile::class, 'updateProfile']);
     Route::post('profile', [Profile::class, 'store']);
+    Route::get('profile/{id}', [Profile::class, 'show']);
 
     // Positions
     // Route::get('/positions', [PositionController::class, 'index']);
