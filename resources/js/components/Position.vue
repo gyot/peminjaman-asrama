@@ -5,13 +5,13 @@
     <button @click="openModal()" class="btn-primary mb-4">+ Tambah Jabatan</button>
 
     <ul class="space-y-2">
-      <li v-for="positions in positions" :key="positions.id" class="border p-3 rounded">
-        <div class="font-semibold">{{ positions.tingkat_pendidikan }} - {{ positions.institusi }}</div>
-        <div class="text-sm">{{ positions.jurusan }} ({{ positions.tahun_masuk }} - {{ positions.tahun_lulus ?? 'Sekarang' }})</div>
-        <a v-if="positions.sk" :href="`/storage/${positions.sk}`" target="_blank" class="text-blue-600 underline">Lihat SK</a>
+      <li v-for="edu in positions" :key="edu.id" class="border p-3 rounded">
+        <div class="font-semibold">{{ edu.nama_jabatan }} - {{ edu.unit_kerja }}</div>
+        <div class="text-sm">{{ formatDate(edu.mulai_jabatan) }} - {{ formatDate(edu.akhir_jabatan) || 'Sekarang' }}</div>
+        <a v-if="edu.sk" :href="`/storage/${edu.sk}`" target="_blank" class="text-blue-600 underline">Lihat SK</a>
         <div class="mt-2">
-          <button @click="editEducation(positions)" class="btn-secondary">Edit</button>
-          <button @click="deleteEducation(positions.id)" class="btn-danger">Hapus</button>
+          <button @click="editPosition(edu)" class="btn-secondary">Edit</button>
+          <button @click="deletePosition(edu.id)" class="btn-danger">Hapus</button>
         </div>
       </li>
     </ul>
@@ -19,19 +19,22 @@
     <!-- Modal -->
     <div v-if="showModal" class="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center">
       <div class="bg-white rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-bold mb-4">{{ form.id ? 'Edit Pendidikan' : 'Tambah Pendidikan' }}</h3>
-        <form @submit.prevent="saveEducation" class="space-y-2">
+        <h3 class="text-lg font-bold mb-4">{{ form.id ? 'Edit Jabatan' : 'Tambah Jabatan' }}</h3>
+        <form @submit.prevent="savePosition" enctype="multipart/form-data" class="space-y-2">
           <label for="">Nama Jabatan:</label>
-          <input v-model="form.nama_jabatan" placeholder="Tingkat Pendidikan" class="input" required />
+          <input v-model="form.nama_jabatan" placeholder="Nama Jabatan" class="input" required />
+
           <label for="">Unit Kerja:</label>
-          <input v-model="form.unit_kerja" placeholder="Institusi" class="input" required />
-          <label for="">Tanggal Mulai Jabatan:</label>
-          <input v-model="form.mulai_jabatan" type="date" placeholder="Jurusan" class="input" />
-          <label for="">Tanggal Selesai Jabatan (Kosongkan jika masih aktif):</label>
-          <input v-model="form.akhir_jabatan" type="date" placeholder="Tahun Lulus" class="input" />
-          
-          <label for="">SK:</label>
-          <input type="file" @change="handleFileUpload" class="input" />
+          <input v-model="form.unit_kerja" placeholder="Unit Kerja" class="input" required />
+
+          <label for="">Mulai Jabatan:</label>
+          <input type="date" v-model="form.mulai_jabatan" class="input" required />
+
+          <!-- <label for="">Akhir Jabatan:</label>
+          <input type="date" v-model="form.akhir_jabatan" class="input" required /> -->
+
+          <label for="">Upload SK (PDF/JPG/PNG):</label>
+          <input type="file" @change="handleFileUpload" accept=".pdf,.jpg,.jpeg,.png" class="input" />
 
           <div class="flex justify-between">
             <button type="submit" class="btn-primary" :disabled="isLoading">
@@ -49,41 +52,42 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { useRouter } from "vue-router"
+import { useAuthStore } from "../stores/auth"
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 const positions = ref([])
 const showModal = ref(false)
+const selectedFile = ref(null)
+const isLoading = ref(false)
+
 const form = ref({
   id: null,
-  nama_jabatan:'',
-  unit_kerja:'',
-  mulai_jabatan:'',
-  akhir_jabatan:'',
+  nama_jabatan: '',
+  unit_kerja: '',
+  mulai_jabatan: '',
+  akhir_jabatan: '',
 })
-const selectedFile = ref(null)
-
-const fetchDataProfil = async () => {
-  try {
-    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
-    console.log(response.data); // Lakukan sesuatu dengan data profil
-  } catch (error) {
-    router.push("/user/profile");
-    console.error("Gagal memuat profil:", error);
-  }
-};
 
 const handleFileUpload = (e) => {
   selectedFile.value = e.target.files[0]
 }
 
-const openModal = (positions = null) => {
-  if (positions) {
-    form.value = { ...positions }
+const openModal = (position = null) => {
+  if (position) {
+    form.value = {
+      id: position.id,
+      nama_jabatan: position.nama_jabatan,
+      unit_kerja: position.unit_kerja,
+      mulai_jabatan: position.mulai_jabatan,
+      akhir_jabatan: position.akhir_jabatan,
+    }
   } else {
     resetForm()
   }
   showModal.value = true
-  console.log(form.value.id);
-  
 }
 
 const closeModal = () => {
@@ -92,26 +96,28 @@ const closeModal = () => {
 }
 
 const fetchPositions = async () => {
-  const res = await axios.get('/api/positions')
-  positions.value = res.data
-  
+  try {
+    const res = await axios.get('/api/positions')
+    positions.value = res.data
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 const resetForm = () => {
   form.value = {
     id: null,
-    nama_jabatan:'',
-    unit_kerja:'',
-    mulai_jabatan:'',
-    akhir_jabatan:'',
+    nama_jabatan: '',
+    unit_kerja: '',
+    mulai_jabatan: '',
+    akhir_jabatan: '',
   }
   selectedFile.value = null
 }
 
-const saveEducation = async () => {
-  
+const savePosition = async () => {
+  isLoading.value = true
   try {
-    // Tampilkan loading Swal
     Swal.fire({
       title: 'Loading...',
       text: 'Sedang menyimpan data, harap tunggu.',
@@ -125,17 +131,15 @@ const saveEducation = async () => {
     for (const key in form.value) {
       formData.append(key, form.value[key])
     }
+
     if (selectedFile.value) {
       formData.append('sk', selectedFile.value)
     }
-    let response;
+
     if (form.value.id) {
       formData.append('_method', 'PUT')
-      // await axios.post(`/api/positions/${form.value.id}`, formData)
-      response = await axios.post(`/api/positions/${form.value.id}`, formData)
-      console.log(response.data);
-      
-      Swal.fire('Berhasil', 'Data berhasil dirubah', 'success')
+      await axios.post(`/api/positions/${form.value.id}`, formData)
+      Swal.fire('Berhasil', 'Data berhasil diperbarui', 'success')
     } else {
       await axios.post('/api/positions', formData)
       Swal.fire('Berhasil', 'Data berhasil ditambahkan', 'success')
@@ -147,42 +151,54 @@ const saveEducation = async () => {
     console.error(err)
     Swal.fire('Gagal', 'Gagal menyimpan data', 'error')
   } finally {
-    // Tutup loading Swal
+    isLoading.value = false
     Swal.close()
   }
 }
 
-const editEducation = (positions) => {
-  openModal(positions)
+const editPosition = (position) => {
+  openModal(position)
 }
 
-const deleteEducation = async (id) => {
+const deletePosition = async (id) => {
   const confirm = await Swal.fire({
     title: 'Yakin ingin hapus?',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Ya, hapus'
   })
+
   if (confirm.isConfirmed) {
     Swal.fire({
       title: 'Loading...',
-      text: 'Sedang menyimpan data, harap tunggu.',
+      text: 'Sedang menghapus data...',
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading()
       },
     })
-    await axios.delete(`/api/positions/${id}`)
-    fetchPositions()
-    Swal.close()
-    Swal.fire('Berhasil', 'Data berhasil dihapus', 'success')
+
+    try {
+      await axios.delete(`/api/positions/${id}`)
+      await fetchPositions()
+      Swal.fire('Berhasil', 'Data berhasil dihapus', 'success')
+    } catch (err) {
+      console.error(err)
+      Swal.fire('Gagal', 'Gagal menghapus data', 'error')
+    } finally {
+      Swal.close()
+    }
   }
 }
 
-onMounted(()=>{
-  fetchEducations()
-  fetchDataProfil()
-  })
+const formatDate = (dateString) => {
+  if (!dateString) return null
+  return new Date(dateString).toLocaleDateString("id-ID", { year: "numeric", month: "2-digit", day: "2-digit" })
+}
+
+onMounted(() => {
+  fetchPositions()
+})
 </script>
 
 <style scoped>

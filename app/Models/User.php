@@ -65,4 +65,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Position::class);
     }
+
+    public function trainingHistories()
+    {
+        return $this->hasMany(TrainingHistory::class);
+    }
 }

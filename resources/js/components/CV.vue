@@ -94,7 +94,6 @@ const fetchUserCV = async () => {
   try {
     const res = await axios.get(`/api/cv/${authStore.user.id}`);
     user.value = res.data;
-    await generateProfessionSummary(user.value);
   } catch (err) {
     console.error(err);
   }
@@ -129,37 +128,37 @@ function downloadPDF() {
   html2pdf().set(opt).from(element).save();
 }
 
-async function generateProfessionSummary(userData) {
-  const experiences = userData.positions?.map(pos =>
-    `${pos.nama_jabatan} di ${pos.unit_kerja} (${formatDate(pos.mulai_jabatan)} - ${pos.akhir_jabatan ? formatDate(pos.akhir_jabatan) : 'sekarang'})`
-  ).join("; ") || "";
+// async function generateProfessionSummary(userData) {
+//   const experiences = userData.positions?.map(pos =>
+//     `${pos.nama_jabatan} di ${pos.unit_kerja} (${formatDate(pos.mulai_jabatan)} - ${pos.akhir_jabatan ? formatDate(pos.akhir_jabatan) : 'sekarang'})`
+//   ).join("; ") || "";
 
-  const prompt = `Berdasarkan pengalaman kerja berikut:\n${experiences}\n\nSimpulkan satu frasa pendek yang menggambarkan profesi utama orang ini.`;
+//   const prompt = `Berdasarkan pengalaman kerja berikut:\n${experiences}\n\nSimpulkan satu frasa pendek yang menggambarkan profesi utama orang ini.`;
 
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${yourOpenAIApiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "user", content: prompt }
-        ],
-        max_tokens: 30,
-        temperature: 0.5
-      })
-    });
+//   try {
+//     const response = await fetch("https://api.openai.com/v1/chat/completions", {
+//       method: "POST",
+//       headers: {
+//         "Authorization": `Bearer ${yourOpenAIApiKey}`,
+//         "Content-Type": "application/json"
+//       },
+//       body: JSON.stringify({
+//         model: "gpt-3.5-turbo",
+//         messages: [
+//           { role: "user", content: prompt }
+//         ],
+//         max_tokens: 30,
+//         temperature: 0.5
+//       })
+//     });
 
-    const result = await response.json();
-    professionSummary.value = result.choices?.[0]?.message?.content?.trim() || "Professional Web Administrator";
-  } catch (error) {
-    console.error("Gagal menyimpulkan profesi:", error);
-    professionSummary.value = "Professional Web Administrator"; // fallback
-  }
-}
+//     const result = await response.json();
+//     professionSummary.value = result.choices?.[0]?.message?.content?.trim() || "Professional Web Administrator";
+//   } catch (error) {
+//     console.error("Gagal menyimpulkan profesi:", error);
+//     professionSummary.value = "Professional Web Administrator"; // fallback
+//   }
+// }
 
 
 onMounted(() => {

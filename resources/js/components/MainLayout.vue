@@ -8,7 +8,7 @@
       <Header @toggleMenu="toggleMenu" />
 
       <!-- Main Content -->
-      <main class="p-6">
+      <main class="p-6 overflow-auto flex-1">
         <router-view />
       </main>
     </div>

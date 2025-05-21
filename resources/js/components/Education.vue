@@ -76,15 +76,15 @@ const currentYear = new Date().getFullYear()
 const startYear = currentYear - 60
 const tahunList = Array.from({ length: 61 }, (_, i) => startYear + i)
 
-const fetchDataProfil = async () => {
-  try {
-    const response = await axios.get(`/api/profile/${authStore.user?.id}`);
-    console.log(response.data); // Lakukan sesuatu dengan data profil
-  } catch (error) {
-    router.push("/user/profile");
-    console.error("Gagal memuat profil:", error);
-  }
-};
+// const fetchDataProfil = async () => {
+//   try {
+//     const response = await axios.get(`/api/profile/${authStore.user?.id}`);
+//     console.log(response.data); // Lakukan sesuatu dengan data profil
+//   } catch (error) {
+//     router.push("/user/profile");
+//     console.error("Gagal memuat profil:", error);
+//   }
+// };
 
 const handleFileUpload = (e) => {
   selectedFile.value = e.target.files[0]
@@ -197,7 +197,7 @@ const deleteEducation = async (id) => {
 
 onMounted(()=>{
   fetchEducations()
-  fetchDataProfil()
+  // fetchDataProfil()
   })
 </script>
 

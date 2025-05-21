@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Profile;
 use App\Http\Controllers\Api\EducationController;    
 use App\Http\Controllers\Api\PositionController;
 use App\Http\Controllers\Api\DataController;
+use App\Http\Controllers\Api\TrainingHistoryController;
 
 // AUTH
 Route::prefix('auth')->group(function () {
@@ -46,12 +47,13 @@ Route::middleware('auth:sanctum')->prefix('api')->group(function () {
     Route::put('profile/profiles/{id}', [Profile::class, 'updateProfile']);
     Route::post('profile', [Profile::class, 'store']);
     Route::get('profile/{id}', [Profile::class, 'show']);
+    Route::get('cv/{id}', [Profile::class, 'showProfile']);
 
     // Positions
-    // Route::get('/positions', [PositionController::class, 'index']);
-    // Route::post('/positions', [PositionController::class, 'store']);
-    // Route::put('/positions/{id}', [PositionController::class, 'update']); // now using PUT method
-    // Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
+    Route::get('/positions', [PositionController::class, 'index']);
+    Route::post('/positions', [PositionController::class, 'store']);
+    Route::put('/positions/{id}', [PositionController::class, 'update']); // now using PUT method
+    Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
 
     // Educations
     Route::get('/educations', [EducationController::class, 'index']);
@@ -62,6 +64,13 @@ Route::middleware('auth:sanctum')->prefix('api')->group(function () {
     // Account
     // Route::get('/account', [Profile::class, 'me']);
     Route::put('/account/{id}', [Profile::class, 'updateAccount']);
+
+    // Training History
+    Route::get('/training-histories', [TrainingHistoryController::class, 'index']);
+    Route::post('/training-histories', [TrainingHistoryController::class, 'store']);
+    Route::get('/training-histories/{id}', [TrainingHistoryController::class, 'show']);
+    Route::put('/training-histories/{id}', [TrainingHistoryController::class, 'update']);
+    Route::delete('/training-histories/{id}', [TrainingHistoryController::class, 'destroy']);
 });
 // Route::post('/login', [AuthController::class, 'login']);
 // Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);

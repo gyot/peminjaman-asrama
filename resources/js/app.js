@@ -19,5 +19,7 @@ import { createPinia } from 'pinia';
 // di main.js atau main.ts
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/js/all.js'
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
+
 
 createApp(App).use(globalFunctions).use(createPinia()).use(router).mount('#app');

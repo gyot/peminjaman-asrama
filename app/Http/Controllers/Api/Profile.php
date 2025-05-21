@@ -48,36 +48,43 @@ class Profile extends Controller
         return response()->json($userProfile, 201, [], JSON_PRETTY_PRINT);
     }
 
-    function updateProfile(Request $request,$id)
+    public function updateProfile(Request $request, $id)
     {
-        $userProfile = UserProfile::find($request->id);
-        if ($userProfile) {
-            if ($request->hasFile('foto')) {
-                // Hapus foto lama jika ada
-                if ($userProfile->foto && Storage::disk('public')->exists(str_replace('storage/', '', $userProfile->foto))) {
-                    Storage::disk('public')->delete(str_replace('storage/', '', $userProfile->foto));
-                }
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'tempat_lahir' => 'required|string',
+            'tanggal_lahir' => 'required|date',
+            'alamat' => 'required|string',
+            'nomor_hp' => 'required|string',
+            // 'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:100048',
+        ]);
 
-                $file = $request->file('foto');
-                $filename = time() . '.' . $file->getClientOriginalExtension();
-                // Simpan ke storage/app/public/images
-                $path = $file->storeAs('images', $filename, 'public');
+        $userProfile = UserProfile::where('user_id', $request->user_id)->first();
 
-                // Simpan path publik ke DB: storage/images/namafile.jpg
-                $userProfile->foto = str_replace('public/', 'storage/', $path);
-            }
-
-            $userProfile->tempat_lahir = $request->tempat_lahir;
-            $userProfile->tanggal_lahir = $request->tanggal_lahir;
-            $userProfile->alamat = $request->alamat;
-            $userProfile->nomor_hp = $request->nomor_hp;
-            $userProfile->save();
-
-            return response()->json($userProfile, 200, [], JSON_PRETTY_PRINT);
-        } else {
+        if (!$userProfile) {
             return response()->json(['message' => 'Data Tidak Ditemukan'], 404);
         }
+
+        if ($request->hasFile('foto')) {
+            if ($userProfile->foto && Storage::disk('public')->exists(str_replace('storage/', '', $userProfile->foto))) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $userProfile->foto));
+            }
+
+            $file = $request->file('foto');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('images', $filename, 'public');
+            $userProfile->foto = str_replace('public/', 'storage/', $path);
+        }
+
+        $userProfile->tempat_lahir = $request->tempat_lahir;
+        $userProfile->tanggal_lahir = $request->tanggal_lahir;
+        $userProfile->alamat = $request->alamat;
+        $userProfile->nomor_hp = $request->nomor_hp;
+        $userProfile->save();
+
+        return response()->json($userProfile, 200, [], JSON_PRETTY_PRINT);
     }
+
 
     public function destroyProfile($id)
     {
@@ -138,4 +145,15 @@ class Profile extends Controller
             return response()->json(['message' => 'Data Tidak Ditemukan'], 404);
         }
     }
+
+    public function showProfile($id)
+    {
+        $user = User::with(['profile','educations', 'positions', 'trainingHistories'])->findOrFail($id);
+        if ($user) {
+            return response()->json($user, 200, [], JSON_PRETTY_PRINT);
+        } else {
+            return response()->json(['message' => 'Data Tidak Ditemukan'], 404);
+        }
+    }
+
 }
