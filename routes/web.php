@@ -71,6 +71,22 @@ Route::middleware('auth:sanctum')->prefix('api')->group(function () {
     Route::get('/training-histories/{id}', [TrainingHistoryController::class, 'show']);
     Route::put('/training-histories/{id}', [TrainingHistoryController::class, 'update']);
     Route::delete('/training-histories/{id}', [TrainingHistoryController::class, 'destroy']);
+
+    Route::post('/lmstudio', function (Request $request) {
+        $data = $request->all();
+    
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json'
+        ])->post('http://localhost:1234/v1/chat/completions', [
+            'model' => 'mistral-7b-instruct-v0.2',
+            'messages' => $data['messages'],
+            'temperature' => 0.7,
+            'max_tokens' => 100,
+            'stream' => false
+        ]);
+    
+        return response()->json($response->json());
+    });
 });
 // Route::post('/login', [AuthController::class, 'login']);
 // Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);

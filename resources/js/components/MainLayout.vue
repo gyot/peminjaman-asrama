@@ -1,5 +1,8 @@
 <template>
   <div class="flex h-screen">
+    <div class="fixed bottom-0 right-4 z-10">
+   <button @click="toggleMenu" class="bg-blue-500 text-white px-2 py-1 rounded">Toggle Menu</button>
+ </div>
     <!-- Sidebar -->
     <Sidebar :isOpen="isMenuOpen" @close="isMenuOpen = false" />
 
