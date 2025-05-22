@@ -133,7 +133,7 @@ async function generateProfessionSummary(userData) {
     `${pos.nama_jabatan} di ${pos.unit_kerja} (${formatDate(pos.mulai_jabatan)} - ${pos.akhir_jabatan ? formatDate(pos.akhir_jabatan) : 'sekarang'})`
   ).join("; ") || "";
 
-  const prompt = `Jawab dalam bahasa Indonesia sejelas dan sesingkat mungkin. Berdasarkan pengalaman kerja berikut:\n${experiences}\n\nSimpulkan satu frasa pendek yang menggambarkan profesi utama saya.`;
+  const prompt = `Jawab dalam bahasa Indonesia sejelas dan sesingkat mungkin. Berdasarkan pengalaman kerja berikut:\n${experiences}\n\nSimpulkan satu frasa pendek yang menggambarkan profesi utama saya tidak perlu tambahan alasan dan penjelasan detail lainnya.`;
 
   try {
     const response = await fetch("http://localhost:1234/v1/chat/completions", {
