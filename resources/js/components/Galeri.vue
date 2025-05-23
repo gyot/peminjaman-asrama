@@ -16,8 +16,7 @@
             class="w-full h-40 object-cover rounded-xl mb-3"
           />
           <h2 class="text-lg font-semibold">{{ item.name }}</h2>
-          <p class="text-sm text-gray-600">Unit: {{ item.unit }}</p>
-          <p class="text-blue-600 font-bold">Rp {{ formatRupiah(item.price) }}/hari</p>
+          <p class="text-blue-600 font-bold">Rp {{ formatRupiah(item.price) }}/{{ item.unit }}</p>
         </div>
       </div>
     </div>
