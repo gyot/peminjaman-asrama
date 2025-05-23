@@ -25,9 +25,11 @@ import Position from "../components/Position.vue";
 import User from "../views/User.vue";
 import Training from "../components/Training.vue";
 import CV from "../components/CV.vue";
+import Galeri from "../components/Galeri.vue";
 
 const routes = [
   { path: "/dashboard", component: Dashboard, meta: { requiresAuth: false } },
+  { path: "/galeri", component: Galeri, meta: { requiresAuth: false } },
   { path: "/selesai", component: Konfirmasi, meta: { requiresAuth: false } },
   {
     path: "/",

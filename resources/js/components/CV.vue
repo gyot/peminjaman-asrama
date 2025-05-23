@@ -129,14 +129,22 @@ function downloadPDF() {
 }
 
 async function generateProfessionSummary(userData) {
-  const experiences = userData.positions?.map(pos =>
-    `${pos.nama_jabatan} di ${pos.unit_kerja} (${formatDate(pos.mulai_jabatan)} - ${pos.akhir_jabatan ? formatDate(pos.akhir_jabatan) : 'sekarang'})`
+  // console.log(userData);
+  let experiences = '';
+  experiences = userData.positions?.map(pos =>
+    `Riwayat Kerja ${pos.nama_jabatan} di ${pos.unit_kerja} (${formatDate(pos.mulai_jabatan)} - ${pos.akhir_jabatan ? formatDate(pos.akhir_jabatan) : 'sekarang'})`
   ).join("; ") || "";
-
-  const prompt = `Jawab dalam bahasa Indonesia sejelas dan sesingkat mungkin. Berdasarkan pengalaman kerja berikut:\n${experiences}\n\nSimpulkan satu frasa pendek yang menggambarkan profesi utama saya tidak perlu tambahan alasan dan penjelasan detail lainnya.`;
-
+  experiences += userData.training_histories?.map(training =>
+    `Riwayat Pelatihan ${training.nama_pelatihan} di ${training.penyelenggara} (${formatDate(training.tanggal_mulai)} - ${formatDate(training.tanggal_selesai)})`
+  ).join("; ") || "";
+  experiences += userData.educations?.map(edu =>
+    `Riwayat Pendidikan ${edu.tingkat_pendidikan} di ${edu.institusi} (${edu.tahun_masuk} - ${edu.tahun_lulus})`
+  ).join("; ") || "";
+  const prompt = `Jawab dalam bahasa Indonesia sejelas dan sesingkat mungkin. Berdasarkan riwayat kerja, pelatihan dan pendidikan berikut:\n${experiences}\n\nSimpulkan satu frasa pendek yang menggambarkan diri saya tidak perlu tambahan alasan dan penjelasan detail lainnya.`;
+  // log("Prompt:", prompt);
+  console.log("Prompt:", prompt);
   try {
-    const response = await fetch("http://localhost:1234/v1/chat/completions", {
+    const response = await fetch("http://127.0.0.1:1234/v1/chat/completions", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
