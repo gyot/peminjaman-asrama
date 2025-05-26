@@ -144,7 +144,7 @@ async function generateProfessionSummary(userData) {
   // log("Prompt:", prompt);
   console.log("Prompt:", prompt);
   try {
-    const response = await fetch("http://127.0.0.1:1234/v1/chat/completions", {
+    const response = await fetch("https://lms.gdoank.my.id/v1/chat/completions", {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
