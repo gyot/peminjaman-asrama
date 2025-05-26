@@ -24,7 +24,7 @@
                 :src="'/storage/' + facility.image" 
                 alt="Gambar fasilitas" 
                 class="w-16 h-16 object-cover" 
-                @error="this.src='/storage/images/logo_kemdikbud.png'" 
+                @error="event => event.target.src='/storage/images/logo_kemdikbud.png'"
               />
             </td>
             <td class="border px-4 py-2">{{ facility.name }}</td>

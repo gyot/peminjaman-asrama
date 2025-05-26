@@ -14,6 +14,7 @@
             :src="'/storage/' + item.image"
             alt="Gambar Sarpras"
             class="w-full h-40 object-cover rounded-xl mb-3"
+            @error="event => event.target.src='/storage/images/logo_kemdikbud.png'"
           />
           <h2 class="text-lg font-semibold">{{ item.name }}</h2>
           <p class="text-blue-600 font-bold">Rp {{ formatRupiah(item.price) }}/{{ item.unit }}</p>
