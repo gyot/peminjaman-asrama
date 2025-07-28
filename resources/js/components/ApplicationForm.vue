@@ -4,7 +4,7 @@
     <form @submit.prevent="submitForm" class="space-y-4">
       <!-- Nama Pemohon -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Nama Pemohon</label>
+        <label class="block text-sm font-medium text-gray-700">Nama Pemohon:</label>
         <input v-model="form.name" type="text" required class="input-field" />
       </div>
 
