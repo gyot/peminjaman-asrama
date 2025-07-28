@@ -159,7 +159,8 @@ const submitForm = async () => {
 
     const id = response.data.data.id;
     const name = form.value.name;
-    const message = `Halo, terdapat permohonan penggunaan sarpras dari ${name}. Silakan cek detailnya di: https://pinjam-sarpras.gdoank.my.id/applications/${id}`;
+    const message = `Halo, terdapat permohonan penggunaan sarpras dari ${name}. Silakan cek detailnya di: ${window.location.origin}/applications/${id}`;
+
 
     await sendMessage(message);
 
