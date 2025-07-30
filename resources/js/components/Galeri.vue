@@ -2,7 +2,7 @@
     <div class="p-6">
       <h1 class="text-2xl font-bold mb-4">Daftar Sarpras BPMP Provinsi NTB</h1>
       <p class="text-sm mt-2">
-      Untuk pemesanan, silakan <a :href="windowLocation" target="_blank" class="text-blue-600 underline">klik di sini</a>.
+      Untuk pemesanan, silakan <a :href="windowLocation+ '/dashboard'" target="_blank" class="text-blue-600 underline">klik di sini</a>.
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <div
@@ -30,7 +30,7 @@
   import Swal from "sweetalert2";
   
   const facilities = ref([]);
-  const windowLocation = window.location.origin+ "/dashboard";
+  const windowLocation = window.location.origin;
   const formatRupiah = (value) => {
     return value.toLocaleString("id-ID", { style: "currency", currency: "IDR" });
   };
