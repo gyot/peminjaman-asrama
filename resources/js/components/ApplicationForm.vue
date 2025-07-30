@@ -180,6 +180,8 @@ const fetchPhoneNumber = async () => {
   try {
     const response = await axios.get("/api/user");
     contactNumber.value = response.data.phone_number;
+    console.log("Nomor HP:", contactNumber.value);
+    
   } catch (error) {
     console.error("Gagal ambil nomor HP", error);
   }
