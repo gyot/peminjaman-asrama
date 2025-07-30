@@ -11,6 +11,7 @@ class Host extends Model
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
             $table->string('host');
+            $table->string('phone')->nullable();
             $table->timestamps();
         });
     }  

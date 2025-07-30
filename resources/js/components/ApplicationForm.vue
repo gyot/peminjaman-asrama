@@ -172,16 +172,32 @@ const submitForm = async () => {
   }
 };
 
+// Tambahan
+const contactNumber = ref("");
+
+// Fetch dari backend
+const fetchPhoneNumber = async () => {
+  try {
+    const response = await axios.get("/api/user");
+    contactNumber.value = response.data.phone_number;
+  } catch (error) {
+    console.error("Gagal ambil nomor HP", error);
+  }
+};
+
 const sendMessage = async (message) => {
   try {
+    // Gunakan di sendMessage
     await axios.post(serverHost.value + "api/whatsapp/send-message", {
-      number: "08175745027",
-      message: message,
+      number: contactNumber.value,
+      message,
     });
   } catch (error) {
     console.error("Error sending WhatsApp message:", error);
   }
 };
+
+
 
 const resetForm = () => {
   form.value = {
@@ -208,6 +224,7 @@ const getServerHost = async () => {
 onMounted(() => {
   fetchFacilities();
   getServerHost();
+  fetchPhoneNumber(); // ambil nomor dari backend
 });
 </script>
 
