@@ -10,34 +10,15 @@
           :key="item.id"
           class="bg-white rounded-2xl shadow-md p-4 hover:shadow-xl transition-shadow"
         >
-          <!-- <img
+          <img
             :src="'/storage/' + item.image"
             alt="Gambar Sarpras"
             class="w-full h-40 object-cover rounded-xl mb-3"
             @error="event => event.target.src='/storage/images/logo_kemdikbud.png'"
-          /> -->
-          <!-- cobain -->
-
-          <img
-            :src="'/storage/' + item.image"
-            @error="e => e.target.src='/storage/images/logo_kemdikbud.png'"
-            alt="Gambar Sarpras"
-            class="w-full h-40 object-cover rounded-xl mb-3"
           />
-          <div class="flex flex-col justify-between h-full">
-            <h2 class="text-lg font-semibold">{{ item.name }}</h2>
-            <p class="text-blue-600 font-bold">Rp {{ formatRupiah(item.price) }}/{{ item.unit }}</p>
-            <p class="text-sm text-gray-600 mt-2">{{ item.description }}</p>
-            <a
-              :href="`/peminjaman/${item.id}`"
-              class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Pesan Sekarang
-            </a>
-          </div>
 
-          <!-- <h2 class="text-lg font-semibold">{{ item.name }}</h2>
-          <p class="text-blue-600 font-bold">Rp {{ formatRupiah(item.price) }}/{{ item.unit }}</p> -->
+          <h2 class="text-lg font-semibold">{{ item.name }}</h2>
+          <p class="text-blue-600 font-bold">Rp {{ formatRupiah(item.price) }}/{{ item.unit }}</p>
         </div>
       </div>
     </div>
