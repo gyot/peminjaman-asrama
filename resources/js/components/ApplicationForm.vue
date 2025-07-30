@@ -179,7 +179,7 @@ const contactNumber = ref("");
 const fetchPhoneNumber = async () => {
   try {
     const response = await axios.get("/api/user");
-    contactNumber.value = response.data.phone_number;
+    contactNumber.value = response.data.phone;
     console.log("Nomor HP:", contactNumber.value);
     
   } catch (error) {
