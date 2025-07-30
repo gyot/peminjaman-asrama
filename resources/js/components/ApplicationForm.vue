@@ -50,6 +50,7 @@
             :value="facility.id"
             v-model="form.facility_id"
             class="text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            @error="event => event.target.src=windowLocation+'/storage/images/logo_kemdikbud.png'"
           />
           <img :src="`/storage/${facility.image}`" alt="gambar" class="w-20 h-20 object-cover rounded-md mr-4" />
           <div class="flex flex-col">
