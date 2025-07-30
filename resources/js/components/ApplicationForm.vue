@@ -201,7 +201,7 @@ const getServerHost = async () => {
     const response = await axios.get("host");
     serverHost.value = response.data[0]?.host || null;
   } catch {
-    Swal.fire("Error", "Gagal mendapatkan server host!", "error");
+    Swal.fire("Error", "Gagal mendapatkan server host! ", "error");
   }
 };
 
