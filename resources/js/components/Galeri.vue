@@ -11,10 +11,10 @@
           class="bg-white rounded-2xl shadow-md p-4 hover:shadow-xl transition-shadow"
         >
           <img
-            :src="'/storage/' + item.image"
+            :src="windowLocation+'/storage/' + item.image"
             alt="Gambar Sarpras"
             class="w-full h-40 object-cover rounded-xl mb-3"
-            @error="event => event.target.src='/storage/images/logo_kemdikbud.png'"
+            @error="event => event.target.src=windowLocation+'/storage/images/logo_kemdikbud.png'"
           />
 
           <h2 class="text-lg font-semibold">{{ item.name }}</h2>
@@ -30,7 +30,7 @@
   import Swal from "sweetalert2";
   
   const facilities = ref([]);
-  const windowLocation = window.location.origin;
+  const windowLocation = window.location.origin+ "/dashboard";
   const formatRupiah = (value) => {
     return value.toLocaleString("id-ID", { style: "currency", currency: "IDR" });
   };
