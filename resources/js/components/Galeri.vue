@@ -16,6 +16,7 @@
             class="w-full h-40 object-cover rounded-xl mb-3"
             @error="event => event.target.src='/storage/images/logo_kemdikbud.png'"
           /> -->
+          <!-- cobain -->
 
           <img
             :src="'/storage/' + item.image"

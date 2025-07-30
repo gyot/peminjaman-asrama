@@ -32,7 +32,7 @@
     "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
   },
   "node_modules/canvg/lib/index.es.js": {
-    "file": "assets/index.es-bfmyUhIs.js",
+    "file": "assets/index.es-DjUm7P44.js",
     "name": "index.es",
     "src": "node_modules/canvg/lib/index.es.js",
     "isDynamicEntry": true,
@@ -69,12 +69,12 @@
     "src": "node_modules/material-design-icons-iconfont/dist/fonts/MaterialIcons-Regular.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-osh85S6c.css",
+    "file": "assets/app-WtbcxJrq.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CMikUmrW.js",
+    "file": "assets/app-DIqiLWKr.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
