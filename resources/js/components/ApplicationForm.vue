@@ -92,6 +92,7 @@ const form = ref({
 
 const facilities = ref([]);
 const serverHost = ref(null);
+const contactNumber = ref(null);
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat("id-ID", {
@@ -172,21 +173,20 @@ const submitForm = async () => {
   }
 };
 
-// Tambahan
-const contactNumber = ref("");
+
 
 // Fetch dari backend
-const fetchPhoneNumber = async () => {
-  try {
-    const response = await axios.get("host");
-    // const response = await axios.get("/api/user");
-    contactNumber.value = response.data[0].phone;
-    console.log("Nomor HP:", contactNumber.value);
+// const fetchPhoneNumber = async () => {
+//   try {
+//     const response = await axios.get("host");
+//     // const response = await axios.get("/api/user");
+//     contactNumber.value = response.data[0].phone;
+//     console.log("Nomor HP:", contactNumber.value);
     
-  } catch (error) {
-    console.error("Gagal ambil nomor HP", error);
-  }
-};
+//   } catch (error) {
+//     console.error("Gagal ambil nomor HP", error);
+//   }
+// };
 
 const sendMessage = async (message) => {
   try {
@@ -219,6 +219,15 @@ const getServerHost = async () => {
   try {
     const response = await axios.get("host");
     serverHost.value = response.data[0]?.host || null;
+    contactNumber.value = response.data[0]?.phone || null;
+
+    if (!serverHost.value) {
+      Swal.fire("Error", "Server host tidak ditemukan!", "error");
+    }
+
+    console.log("Server Host:", serverHost.value);
+    console.log("Contact Number:", contactNumber.value);   
+
   } catch {
     Swal.fire("Error", "Gagal mendapatkan server host! ", "error");
   }
@@ -227,7 +236,7 @@ const getServerHost = async () => {
 onMounted(() => {
   fetchFacilities();
   getServerHost();
-  fetchPhoneNumber(); // ambil nomor dari backend
+  // fetchPhoneNumber(); // ambil nomor dari backend
 });
 </script>
 
