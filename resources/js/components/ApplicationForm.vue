@@ -178,7 +178,8 @@ const contactNumber = ref("");
 // Fetch dari backend
 const fetchPhoneNumber = async () => {
   try {
-    const response = await axios.get("/api/user");
+    const response = await axios.get("host");
+    // const response = await axios.get("/api/user");
     contactNumber.value = response.data.phone;
     console.log("Nomor HP:", contactNumber.value);
     
