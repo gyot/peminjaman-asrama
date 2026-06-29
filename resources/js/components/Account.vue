@@ -119,7 +119,7 @@ const submit = async () => {
 
     Swal.fire("Berhasil", "Data berhasil dirubah!", "success");
     showModal.value = false;
-    await fetchDataProfil();
+    // await fetchDataProfil();
   } catch (error) {
     console.error(error);
     Swal.fire("Error", "Gagal mengirim data!", "error");
@@ -128,7 +128,7 @@ const submit = async () => {
 
 onMounted(() => {
   authStore.fetchUser();
-  fetchDataProfil();
+  // fetchDataProfil();
 });
 </script>
 

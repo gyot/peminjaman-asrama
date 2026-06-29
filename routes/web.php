@@ -11,23 +11,30 @@ use App\Http\Controllers\Api\PositionController;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 // AUTH
-Route::prefix('auth')->group(function () {
-    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1'); // Rate limit login
-    Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
-    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+// Route::prefix('auth')->group(function () {
+//     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1'); // Rate limit login
+//     Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
+//     Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+// });
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::middleware('auth:api')->group(function () {
+    Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+    // Tambahkan rute API lain di sini
 });
 
 Route::get('/tes-route', function () {
     return 'Route OK';
 });
-
 // PUBLIC ROUTES
 Route::get('get/facilities', [FacilityController::class,'index']);
 // PROTECTED ROUTES
 Route::get('/host', [HostController::class, 'getHost']);
-Route::middleware('auth:sanctum',
-EnsureFrontendRequestsAreStateful::class)->prefix('api')->group(function () {
+Route::get('profile/{id}', [ProfileController::class, 'getProfile']);
+Route::middleware('auth:api',)->prefix('api')->group(function () {
     
+    // Route::get('profile/', [ProfileController::class, 'getProfile']);
     // Applications
     Route::apiResource('applications', ApplicationController::class)->except(['edit', 'create']);
     Route::get('applications/{id}/detail/{approvalStatus}', [ApplicationController::class, 'detail']); // Custom detail route
@@ -44,7 +51,6 @@ EnsureFrontendRequestsAreStateful::class)->prefix('api')->group(function () {
     // Route::get('facilities/{id}', [FacilityController::class,'show']);
 
     // Profiles
-    Route::get('profile/', [ProfileController::class, 'getProfile']);
     // Route::put('profile/profiles/{id}', [ProfileController::class, 'updateProfile']);
     // Route::post('profile', [ProfileController::class, 'store']);
 

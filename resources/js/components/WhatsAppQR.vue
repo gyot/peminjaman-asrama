@@ -113,7 +113,7 @@ const updateHost = async () => {
 // Lifecycle hooks
 onMounted(() => {
   getServerHost(); // Panggil getServerHost saat komponen dimuat
-  fetchDataProfil();
+  // fetchDataProfil();
 });
 
 onBeforeUnmount(() => {

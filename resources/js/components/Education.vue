@@ -197,7 +197,7 @@ const deleteEducation = async (id) => {
 
 onMounted(()=>{
   fetchEducations()
-  fetchDataProfil()
+  // fetchDataProfil()
   })
 </script>
 

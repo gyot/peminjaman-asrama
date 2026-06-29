@@ -29,6 +29,7 @@ import Position from "../components/Position.vue";
 
 // axios.defaults.baseURL = 'http://localhost:8002';
 axios.defaults.withCredentials = true;
+
 // ROUTES
 const routes = [
   {
@@ -84,10 +85,11 @@ const router = createRouter({
 // ✅ Function untuk cek data profil user
 const fetchDataProfil = async (userId) => {
   try {
-    const response = await axios.get(`/api/profile/${userId}`);
+    const response = await axios.get(window.location.origin+"/profile/"+userId);
+    console.log(userId);
+    
     return response.data;
   } catch (error) {
-    console.error("Gagal mengambil data profil:", error.response?.status);
     return null;
   }
 };
@@ -96,12 +98,13 @@ const fetchDataProfil = async (userId) => {
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
-  const publicPages = ["/login", "/register", "/reset-password", "/not-found"];
+  if (!authStore.user && localStorage.getItem("token")) {
+    await authStore.initAuth();
+  }
+
   const authRequired = to.matched.some(record => record.meta.requiresAuth);
 
-  if (!authRequired) {
-    return next();
-  }
+  if (!authRequired) return next();
 
   if (!authStore.user || !authStore.token) {
     return next("/login");
@@ -109,17 +112,14 @@ router.beforeEach(async (to, from, next) => {
 
   const userId = authStore.user.id;
   if (!userId) {
-    console.warn("User ID tidak ditemukan.");
     return next("/login");
   }
 
   const profil = await fetchDataProfil(userId);
-  console.log("Data profil:", profil);
 
-  // Jika belum punya profil dan bukan sedang menuju halaman buat profil
-  // if (!profil && to.name !== "Profile") {
-  //   return next({ name: "Profile" });
-  // }
+  if (!profil && to.name !== "Profile") {
+    return next({ name: "Profile" });
+  }
 
   next();
 });

@@ -95,28 +95,16 @@ const details = computed(() => [
 ]);
 
 const fetchData = async () => {
-  // const response = await axios.get(`/api/profile/1`);
-  // const fetchData = async () => {
-    try {
-      const response = await axios.get("/api/profile/");
-      console.log(response.data);
-    application.value = response.data;
+  isLoading.value = true;
+  try {
+    const response = await axios.get(`/profile/${authStore.user?.id}`);
+    profile.value = response.data;
+    profile.value.foto = `../storage/${profile.value.foto}`;
   } catch (error) {
-    console.error(error);
+    Swal.fire("Error", "Gagal memuat data profil.", "error");
+  } finally {
+    isLoading.value = false;
   }
-// };
-  // isLoading.value = true;
-  // try {
-  //   const response = await axios.get(`/api/profile/1`);
-  //   profile.value = response.data;
-  //   profile.value.foto = `../storage/${profile.value.foto}`;
-  // } catch (error) {
-  //   statusEdit.value = "create";
-  //   showModal.value = true;
-  //   console.error("Gagal memuat profil:", error);
-  // } finally {
-  //   isLoading.value = false;
-  // }
 };
 
 const openModal = () => {

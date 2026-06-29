@@ -140,7 +140,7 @@ const exportPDF = () => {
 
 onMounted(() => {
   fetchData();
-  fetchDataProfil();
+  // fetchDataProfil();
 });
 </script>
 

@@ -111,7 +111,7 @@ const formatDateTime = (date) => {
 
 onMounted(()=>{
   fetchApprovals();
-  fetchDataProfil();
+  // fetchDataProfil();
 });
 </script>
 

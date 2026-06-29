@@ -1,5 +1,5 @@
-import { defineStore } from "pinia";
-import axios from "axios";
+import { defineStore } from 'pinia';
+import axios from 'axios';
 
 export const useAuthStore = defineStore("auth", {
     state: () => ({
@@ -23,14 +23,10 @@ export const useAuthStore = defineStore("auth", {
 
         async fetchUser() {
             try {
-                const response = await axios.get('/auth/me', {
-                    headers: {
-                        Authorization: `Bearer ${this.token}`
-                    }
-                });
+                const response = await axios.get("/auth/me");
                 this.user = response.data.user;
             } catch (error) {
-                console.error('Gagal mengambil data user:', error);
+                this.logout(); // ⬅ Langsung logout jika terjadi error
             }
         },
 
@@ -40,10 +36,15 @@ export const useAuthStore = defineStore("auth", {
             this.user = null;
             delete axios.defaults.headers.common["Authorization"];
         },
+
+        initAuth() {
+            const token = localStorage.getItem("token");
+            if (token) {
+                this.token = token;
+                axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+                return this.fetchUser(); // HARUS di-return
+            }
+            return Promise.resolve();
+        }
     },
 });
-
-// Set token ke header secara global saat store pertama kali dimuat
-if (localStorage.getItem("token")) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem("token")}`;
-}

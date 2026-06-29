@@ -244,7 +244,7 @@ const resetForm = () => {
 
 onMounted(()=>{
     fetchFacilities()
-  fetchDataProfil()
+  // fetchDataProfil()
   })
 
 onBeforeUnmount(() => {

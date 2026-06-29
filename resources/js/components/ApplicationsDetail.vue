@@ -192,7 +192,7 @@ onMounted(() => {
   authStore.fetchUser();
   fetchData();
   getServerHost();
-  fetchDataProfil();
+  // fetchDataProfil();
 });
 </script>
 
