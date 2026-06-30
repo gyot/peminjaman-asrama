@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\EducationController;    
 use App\Http\Controllers\Api\PositionController;
+use App\Http\Controllers\Api\DataController;
 
 // AUTH
 // Route::prefix('auth')->group(function () {
