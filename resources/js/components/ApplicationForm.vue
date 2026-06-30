@@ -4,7 +4,7 @@
     <form @submit.prevent="submitForm" class="space-y-4">
       <!-- Nama Pemohon -->
       <div>
-        <label class="block text-sm font-medium text-gray-700">Nama Pemohon</label>
+        <label class="block text-sm font-medium text-gray-700">Nama Pemohon:</label>
         <input v-model="form.name" type="text" required class="input-field" />
       </div>
 
@@ -50,6 +50,7 @@
             :value="facility.id"
             v-model="form.facility_id"
             class="text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            @error="event => event.target.src=windowLocation+'/storage/images/logo_kemdikbud.png'"
           />
           <img :src="`/storage/${facility.image}`" alt="gambar" class="w-20 h-20 object-cover rounded-md mr-4" />
           <div class="flex flex-col">
@@ -92,6 +93,7 @@ const form = ref({
 
 const facilities = ref([]);
 const serverHost = ref(null);
+const contactNumber = ref(null);
 
 const formatCurrency = (value) => {
   return new Intl.NumberFormat("id-ID", {
@@ -124,11 +126,11 @@ const submitForm = async () => {
     Swal.fire("Oops!", "Tanggal mulai tidak boleh setelah tanggal selesai.", "warning");
     return;
   }
-  const today = new Date().toISOString().split("T")[0];
-  if (form.value.event_start_date < today) {
-    Swal.fire("Oops!", "Tanggal mulai tidak boleh kurang dari hari ini.", "warning");
-    return;
-  }
+  // const today = new Date().toISOString().split("T")[0];
+  // if (form.value.event_start_date < today) {
+  //   Swal.fire("Oops!", "Tanggal mulai tidak boleh kurang dari hari ini.", "warning");
+  //   return;
+  // }
 
   let phone_number = form.value.phone_number;
   if (phone_number.startsWith("+")) {
@@ -159,7 +161,8 @@ const submitForm = async () => {
 
     const id = response.data.data.id;
     const name = form.value.name;
-    const message = `Halo, terdapat permohonan penggunaan sarpras dari ${name}. Silakan cek detailnya di: https://pinjam-sarpras.gdoank.my.id/applications/${id}`;
+    const message = `Halo, terdapat permohonan penggunaan sarpras dari ${name}. Silakan cek detailnya di: ${window.location.origin}/applications/${id}`;
+
 
     await sendMessage(message);
 
@@ -171,16 +174,34 @@ const submitForm = async () => {
   }
 };
 
+
+
+// Fetch dari backend
+// const fetchPhoneNumber = async () => {
+//   try {
+//     const response = await axios.get("host");
+//     // const response = await axios.get("/api/user");
+//     contactNumber.value = response.data[0].phone;
+//     console.log("Nomor HP:", contactNumber.value);
+    
+//   } catch (error) {
+//     console.error("Gagal ambil nomor HP", error);
+//   }
+// };
+
 const sendMessage = async (message) => {
   try {
+    // Gunakan di sendMessage
     await axios.post(serverHost.value + "api/whatsapp/send-message", {
-      number: "6287865811603",
-      message: message,
+      number: contactNumber.value,
+      message,
     });
   } catch (error) {
-    console.error("Error sending WhatsApp message:", error);
+    console.error("Error sending WhatsApp message :", error);
   }
 };
+
+
 
 const resetForm = () => {
   form.value = {
@@ -199,14 +220,24 @@ const getServerHost = async () => {
   try {
     const response = await axios.get("host");
     serverHost.value = response.data[0]?.host || null;
+    contactNumber.value = response.data[0]?.phone || null;
+
+    if (!serverHost.value) {
+      Swal.fire("Error", "Server host tidak ditemukan!", "error");
+    }
+
+    console.log("Server Host:", serverHost.value);
+    console.log("Contact Number:", contactNumber.value);   
+
   } catch {
-    Swal.fire("Error", "Gagal mendapatkan server host!", "error");
+    Swal.fire("Error", "Gagal mendapatkan server host! ", "error");
   }
 };
 
 onMounted(() => {
   fetchFacilities();
   getServerHost();
+  // fetchPhoneNumber(); // ambil nomor dari backend
 });
 </script>
 

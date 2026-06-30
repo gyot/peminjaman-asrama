@@ -11,7 +11,8 @@ class FacilityController extends Controller
 {
     public function index()
     {
-        return response()->json(Facility::where('status','<>','dihapus')->get(), 200);
+        return response()->json(Facility::whereNull('status')
+          ->orWhere('status', '<>', 'dihapus')->get(), 200);
     }
 
     public function store(Request $request)

@@ -65,8 +65,7 @@ class PositionController extends Controller
         $request->validate([
             'nama_jabatan' => 'required|string',
             'unit_kerja' => 'required|string',
-            'mulai_jabatan' => 'required|string',
-            'akhir_jabatan' => 'required|string',            
+            'mulai_jabatan' => 'required|string',           
             'sk' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
         ]);
 

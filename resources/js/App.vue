@@ -35,7 +35,9 @@
 import { useAuthStore } from './stores/auth';
 
 const authStore = useAuthStore();
-authStore.fetchUser(); // Panggil sekali saat App.vue dimuat
+if (authStore.token) {
+  authStore.fetchUser();
+}
 </script>
 
   

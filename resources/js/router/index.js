@@ -19,28 +19,22 @@ import Register from "../views/Register.vue";
 import ResetPassword from "../views/ResetPassword.vue";
 import Konfirmasi from "../views/Konfirmasi.vue";
 import NotFound from "../views/NotFound.vue";
-import User from "../views/User.vue";
+// import User from "../views/User.vue";
 
 // Components (User Sub-Routes)
 import Account from "../components/Account.vue";
 import Profile from "../components/Profile.vue";
 import Education from "../components/Education.vue";
 import Position from "../components/Position.vue";
-
-// axios.defaults.baseURL = 'http://localhost:8002';
-axios.defaults.withCredentials = true;
+import User from "../views/User.vue";
 
 // ROUTES
 const routes = [
-  {
-    path: "/",
-    component: AuthLayout,
-    children: [
-      { path: "login", name: "Login", component: Login, meta: { requiresAuth: false } },
-      { path: "register", name: "Register", component: Register, meta: { requiresAuth: false } },
-      { path: "reset-password", name: "ResetPassword", component: ResetPassword, meta: { requiresAuth: false } },
-    ],
-  },
+  { path: "/dashboard", component: Dashboard, meta: { requiresAuth: false } },
+  { path: "/selesai", component: Konfirmasi, meta: { requiresAuth: false } },
+  { path: "/login", name: "Login", component: Login, meta: { requiresAuth: false } },
+  { path: "/register", name: "Register", component: Register, meta: { requiresAuth: false } },
+  { path: "/reset-password", name: "ResetPassword", component: ResetPassword, meta: { requiresAuth: false } },
   {
     path: "/",
     component: MainLayout,
@@ -60,10 +54,10 @@ const routes = [
         path: "user",
         component: User,
         children: [
-          { path: "account", name: "Account", component: Account },
-          { path: "profile", name: "Profile", component: Profile },
-          { path: "education", name: "Education", component: Education },
-          { path: "position", name: "Position", component: Position },
+          { path: "account", name: "Account", component: Account, meta: { requiresAuth: true } },
+          { path: "profile", name: "Profile", component: Profile, meta: { requiresAuth: true } },
+          { path: "education", name: "Education", component: Education, meta: { requiresAuth: true } },
+          { path: "position", name: "Position", component: Position, meta: { requiresAuth: true } },
         ],
       },
     ],
@@ -98,30 +92,17 @@ const fetchDataProfil = async (userId) => {
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
 
-  if (!authStore.user && localStorage.getItem("token")) {
-    await authStore.initAuth();
-  }
-
-  const authRequired = to.matched.some(record => record.meta.requiresAuth);
-
-  if (!authRequired) return next();
-
-  if (!authStore.user || !authStore.token) {
+  if (to.meta.requiresAuth && !authStore.token) {
+    localStorage.setItem("intendedRoute", to.fullPath);
     return next("/login");
   }
-
-  const userId = authStore.user.id;
-  if (!userId) {
-    return next("/login");
-  }
-
-  const profil = await fetchDataProfil(userId);
-
-  if (!profil && to.name !== "Profile") {
-    return next({ name: "Profile" });
-  }
+  // alert("masuk ke halaman " + authStore.user?.id);
+  // if (!profileStore.profileData) {
+  //   await profileStore.fetchProfile(authStore.user?.id); // Tunggu hingga data profil selesai dimuat
+  // }
 
   next();
 });
+
 
 export default router;

@@ -8,7 +8,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\EducationController;    
 use App\Http\Controllers\Api\PositionController;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 // AUTH
 // Route::prefix('auth')->group(function () {
@@ -30,6 +29,7 @@ Route::get('/tes-route', function () {
 // PUBLIC ROUTES
 Route::get('get/facilities', [FacilityController::class,'index']);
 // PROTECTED ROUTES
+    Route::get('data_diri/{id}', [DataController::class,'show']);
 Route::get('/host', [HostController::class, 'getHost']);
 Route::get('profile/{id}', [ProfileController::class, 'getProfile']);
 Route::middleware('auth:api',)->prefix('api')->group(function () {
@@ -39,6 +39,8 @@ Route::middleware('auth:api',)->prefix('api')->group(function () {
     Route::apiResource('applications', ApplicationController::class)->except(['edit', 'create']);
     Route::get('applications/{id}/detail/{approvalStatus}', [ApplicationController::class, 'detail']); // Custom detail route
     Route::get('approvals', [ApplicationController::class, 'approvals']);
+    
+     // Applications
     
     // Facilities
     // Route::apiResource('facilities', [FacilityController::class,'index'])->only(['index']);
@@ -51,14 +53,15 @@ Route::middleware('auth:api',)->prefix('api')->group(function () {
     // Route::get('facilities/{id}', [FacilityController::class,'show']);
 
     // Profiles
-    // Route::put('profile/profiles/{id}', [ProfileController::class, 'updateProfile']);
-    // Route::post('profile', [ProfileController::class, 'store']);
+    // Route::get('profile/{id}', [Profile::class, 'getProfile']);
+    Route::put('profile/profiles/{id}', [Profile::class, 'updateProfile']);
+    Route::post('profile', [Profile::class, 'store']);
 
     // Positions
-    // Route::get('/positions', [PositionController::class, 'index']);
-    // Route::post('/positions', [PositionController::class, 'store']);
-    // Route::put('/positions/{id}', [PositionController::class, 'update']); // now using PUT method
-    // Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
+    Route::get('/positions', [PositionController::class, 'index']);
+    Route::post('/positions', [PositionController::class, 'store']);
+    Route::put('/positions/{id}', [PositionController::class, 'update']); // now using PUT method
+    Route::delete('/positions/{id}', [PositionController::class, 'destroy']);
 
     // Educations
     Route::get('/educations', [EducationController::class, 'index']);
@@ -67,8 +70,8 @@ Route::middleware('auth:api',)->prefix('api')->group(function () {
     Route::delete('/educations/{id}', [EducationController::class, 'destroy']);
 
     // Account
-    // Route::get('/account', [ProfileController::class, 'me']);
-    Route::put('/account/{id}', [ProfileController::class, 'updateAccount']);
+    // Route::get('/account', [Profile::class, 'me']);
+    Route::put('/account/{id}', [Profile::class, 'updateAccount']);
 });
 // Route::post('/login', [AuthController::class, 'login']);
 // Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);

@@ -1,5 +1,8 @@
 <template>
   <div class="flex h-screen">
+    <div class="fixed bottom-0 right-4 z-10">
+   <button @click="toggleMenu" class="bg-blue-500 text-white px-2 py-1 rounded">Toggle Menu</button>
+ </div>
     <!-- Sidebar -->
     <Sidebar :isOpen="isMenuOpen" @close="isMenuOpen = false" />
 
@@ -8,7 +11,7 @@
       <Header @toggleMenu="toggleMenu" />
 
       <!-- Main Content -->
-      <main class="p-6">
+      <main class="p-6 overflow-auto flex-1">
         <router-view />
       </main>
     </div>

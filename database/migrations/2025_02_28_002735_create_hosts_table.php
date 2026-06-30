@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('hosts', function (Blueprint $table) {
             $table->id();
             $table->string('host');
+            $table->string('phone')->nullable();
             $table->timestamps();
         });
     }
