@@ -58,10 +58,10 @@
           </button>
         </form>
   
-        <!-- <p class="mt-4">
+        <p class="mt-4">
           Belum punya akun?
           <router-link to="/register" class="text-blue-500">Daftar di sini</router-link>
-        </p> -->
+        </p>
       </div>
     </div>
   </template>

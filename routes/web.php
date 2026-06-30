@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\DataController;
 //     Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 // });
 Route::post('/auth/login', [AuthController::class, 'login']);
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
@@ -33,7 +33,7 @@ Route::get('get/facilities', [FacilityController::class,'index']);
     Route::get('data_diri/{id}', [DataController::class,'show']);
 Route::get('/host', [HostController::class, 'getHost']);
 Route::get('profile/{id}', [ProfileController::class, 'getProfile']);
-Route::middleware('auth:api',)->prefix('api')->group(function () {
+Route::middleware('auth:sanctum')->prefix('api')->group(function () {
     
     // Route::get('profile/', [ProfileController::class, 'getProfile']);
     // Applications
