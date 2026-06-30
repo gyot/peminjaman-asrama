@@ -18,6 +18,7 @@ export const useAuthStore = defineStore("auth", {
         axios.defaults.headers.common["Authorization"] = `Bearer ${this.token}`;
         await this.fetchUser(); // opsional, kalau ingin ambil info user lagi
       } catch (error) {
+        console.error('Login error detail:', error.response?.data || error);
         throw error.response?.data?.message || "Login gagal";
       }
     },
