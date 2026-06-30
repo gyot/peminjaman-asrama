@@ -54,8 +54,8 @@ Route::middleware('auth:api',)->prefix('api')->group(function () {
 
     // Profiles
     // Route::get('profile/{id}', [Profile::class, 'getProfile']);
-    Route::put('profile/profiles/{id}', [Profile::class, 'updateProfile']);
-    Route::post('profile', [Profile::class, 'store']);
+    Route::put('profile/profiles/{id}', [ProfileController::class, 'updateProfile']);
+    Route::post('profile', [ProfileController::class, 'store']);
 
     // Positions
     Route::get('/positions', [PositionController::class, 'index']);
@@ -71,7 +71,7 @@ Route::middleware('auth:api',)->prefix('api')->group(function () {
 
     // Account
     // Route::get('/account', [Profile::class, 'me']);
-    Route::put('/account/{id}', [Profile::class, 'updateAccount']);
+    Route::put('/account/{id}', [ProfileController::class, 'updateAccount']);
 });
 // Route::post('/login', [AuthController::class, 'login']);
 // Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);

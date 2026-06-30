@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        '/api/setApplications', // Tambahkan endpoint yang ingin dikecualikan
+        '/api/*',
+        '/auth/*',
     ];
 }

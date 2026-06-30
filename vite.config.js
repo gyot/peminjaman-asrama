@@ -10,14 +10,16 @@ export default defineConfig({
     }),
     vue(),
   ],
-  // server: {
-  //   proxy: {
-  //     '/api': {
-  //       target: 'http://127.0.0.1:8000', // Ganti dengan alamat backend Anda
-  //       changeOrigin: true,
-  //       secure: false,
-  //       // rewrite: (path) => path.replace(/^\/api/, ''),
-  //     },
-  //   },
-  // },
+  server: {
+    proxy: {
+      '/auth': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
+    },
+  },
 });

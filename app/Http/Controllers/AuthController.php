@@ -17,22 +17,24 @@ class AuthController extends Controller
             return response()->json(['message' => 'Email atau password salah'], 401);
         }
 
+        $user = JWTAuth::user();
+
         return response()->json([
             'token' => $token,
-            'user' => auth()->user()
+            'user' => $user
         ]);
     }
 
     public function me()
     {
         return response()->json([
-            'user' => auth()->user()
+            'user' => JWTAuth::user()
         ]);
     }
 
     public function logout()
     {
-        auth()->logout();
+        JWTAuth::invalidate(JWTAuth::getToken());
         return response()->json(['message' => 'Berhasil logout']);
     }
 
